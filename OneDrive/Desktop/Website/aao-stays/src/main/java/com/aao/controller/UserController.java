@@ -1,49 +1,76 @@
 package com.aao.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.aao.dto.UserResponse;
-import com.aao.entity.User;
+import com.aao.dto.*;
 import com.aao.response.ApiResponse;
 import com.aao.serviceInterface.IUserService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
-	
-	public final IUserService userService;
-	
-	
-	@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-	@DeleteMapping("/deleteById/{id}")
-	public ResponseEntity<ApiResponse<UserResponse>> delteUserById(@PathVariable Long id ){
-		ApiResponse<UserResponse> response=userService.deleteUserById(id);
-		return ResponseEntity.status(response.getStatusCode()).body(response);
-	}
-	@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-	@GetMapping("/getById/{id}")
-	public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable Long  id){
-		
-		ApiResponse<UserResponse> response=userService.getUserById(id);
-		 return ResponseEntity.status(response.getStatusCode()).body(response);
-	}
-	@PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
-	@GetMapping("/getAll")
-	public ResponseEntity<ApiResponse<List<UserResponse>>> getAllUsers(){
-		ApiResponse<List<UserResponse>> response=userService.getAllUsers();
-		
-		return ResponseEntity.status(response.getStatusCode()).body(response);
-		
-	}
+
+    private final IUserService userService;
+
+    // ================================================================
+    // REGISTER
+    // ================================================================
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        ApiResponse<?> response = userService.register(request);
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    // ================================================================
+    // LOGIN
+    // ================================================================
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        ApiResponse<?> response = userService.login(request);
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    // ================================================================
+    // UPDATE EMAIL
+    // ================================================================
+    @PutMapping("/{id}/email")
+    public ResponseEntity<?> updateEmail(
+            @PathVariable Long id,
+            @RequestBody UpdateEmailRequest request) {
+
+        ApiResponse<?> response = userService.updateEmail(id, request.getNewEmail());
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    // ================================================================
+    // UPDATE PASSWORD
+    // ================================================================
+    @PutMapping("/{id}/password")
+    public ResponseEntity<?> updatePassword(
+            @PathVariable Long id,
+            @RequestBody UpdatePasswordRequest request) {
+
+        ApiResponse<?> response = userService.updatePassword(
+                id,
+                request.getOldPassword(),
+                request.getNewPassword()
+        );
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
+    // ================================================================
+    // UPDATE USERNAME
+    // ================================================================
+    @PutMapping("/{id}/username")
+    public ResponseEntity<?> updateUsername(
+            @PathVariable Long id,
+            @RequestBody UpdateUsernameRequest request) {
+
+        ApiResponse<?> response = userService.updateUsername(id, request.getNewUsername());
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
 }
