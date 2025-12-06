@@ -33,20 +33,31 @@ public class SecurityConfigure {
 
         http
             .csrf(csrf -> csrf.disable())
-
-
-            .cors(cors -> {})   
+            .cors(cors -> {})
 
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/auth/**").permitAll()
-                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                    .requestMatchers("/api/v1/admins/**").hasRole("ADMIN")
-                    .requestMatchers("/api/v1/upload/image").hasAnyRole("ADMIN", "HOST")
-                    .requestMatchers("/api/v1/properties/**").hasAnyRole("ADMIN", "HOST")
 
+                // PUBLIC ROUTES
+                .requestMatchers("/api/auth/**").permitAll()
 
+               
+                .requestMatchers(
+                    "/api/v1/properties/getAll",
+                    "/api/v1/properties/search",
+                    "/api/v1/properties/*/images",
+                    "/api/v1/properties/*"  
+                ).permitAll()
 
-                    .anyRequest().authenticated()
+                
+                .requestMatchers("/api/v1/properties").hasAnyRole("ADMIN", "HOST")      
+                .requestMatchers("/api/v1/properties/*").hasAnyRole("ADMIN", "HOST")    
+
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/admins/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/upload/image").hasAnyRole("ADMIN", "HOST")
+
+              
+                .anyRequest().authenticated()
             )
 
             .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -55,7 +66,6 @@ public class SecurityConfigure {
 
         return http.build();
     }
-
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(401, "Invalid email or password", null));
     }
 
-    // 2️⃣ Handle IllegalArgumentException (email exists, user not found)
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
