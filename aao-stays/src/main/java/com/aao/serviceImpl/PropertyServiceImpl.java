@@ -82,7 +82,6 @@ public class PropertyServiceImpl implements PropertyService {
         Property existingProperty = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new IllegalArgumentException("Property not found with ID: " + propertyId));
 
-        // Update fields
         if (propertyDto.getPropertyName() != null)
             existingProperty.setPropertyName(propertyDto.getPropertyName());
         if (propertyDto.getPropertyType() != null)

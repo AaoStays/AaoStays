@@ -14,25 +14,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/properties")
 @RequiredArgsConstructor
 public class PropertyController {
 
     private final PropertyService propertyService;
-    
     private final PropertyImageService propertyImageService;
 
-    @PostMapping
-	@PreAuthorize("hasAnyRole('ADMIN', 'HOST')")
-    public ResponseEntity<ApiResponse<PropertyDto>> addProperty(@RequestBody PropertyDto propertyDto) {
-        ApiResponse<PropertyDto> response = propertyService.addProperty(propertyDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
+    // PUBLIC → Anyone can browse properties
     @GetMapping("/getAll")
-    @PreAuthorize("hasAnyRole('ADMIN','HOST')")
     public ResponseEntity<ApiResponse<List<PropertyDto>>> getAllProperties() {
         ApiResponse<List<PropertyDto>> response = propertyService.getAllProperties();
         if (response.getStatusCode() == 204) {
@@ -41,46 +32,62 @@ public class PropertyController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    // PUBLIC
     @GetMapping("/{propertyId}")
-    @PreAuthorize("hasAnyRole('ADMIN','HOST')")
     public ResponseEntity<ApiResponse<PropertyDto>> getPropertyById(@PathVariable Long propertyId) {
         ApiResponse<PropertyDto> response = propertyService.getPropertyById(propertyId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/{propertyId}")
-    public ResponseEntity<ApiResponse<PropertyDto>> updateProperty(@PathVariable Long propertyId,
-            @RequestBody PropertyDto propertyDto) {
-        ApiResponse<PropertyDto> response = propertyService.updateProperty(propertyId, propertyDto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    // PUBLIC
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<PropertyDto>>> searchProperties(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String state,
+            @RequestParam(required = false) String categoryType,
+            @RequestParam(required = false) String propertyType,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice
+    ) {
+        ApiResponse<List<PropertyDto>> response = 
+            propertyService.serachProperty(city, state, categoryType, propertyType, minPrice, maxPrice);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @DeleteMapping("/{propertyId}")
-    public ResponseEntity<ApiResponse<Void>> deleteProperty(@PathVariable Long propertyId) {
-        ApiResponse<Void> response = propertyService.deleteProperty(propertyId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-    
+    // PUBLIC
     @GetMapping("/{propertyId}/images")
     public ResponseEntity<List<PropertyImage>> getImagesByProperty(@PathVariable Long propertyId) {
         List<PropertyImage> images = propertyImageService.getImagesByProperty(propertyId);
         return ResponseEntity.ok(images);
     }
-    
-    
-    
-    
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<PropertyDto>>> searchProperties( @RequestParam(required = false) String city,
-            @RequestParam(required = false) String state,
-            @RequestParam(required = false) String categoryType,
-            @RequestParam(required = false) String propertyType,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice){
-    	
-    	
-    	ApiResponse<List<PropertyDto>> response= propertyService.serachProperty(city, state, categoryType, propertyType, minPrice, maxPrice);
-    	return ResponseEntity.status(response.getStatusCode()).body(response);
-    	
+
+    // PROTECTED → TOKEN REQUIRED
+    @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'HOST')")
+    public ResponseEntity<ApiResponse<PropertyDto>> addProperty(@RequestBody PropertyDto propertyDto) {
+        ApiResponse<PropertyDto> response = propertyService.addProperty(propertyDto);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    // PROTECTED → TOKEN REQUIRED
+    @PutMapping("/{propertyId}")
+    @PreAuthorize("hasAnyRole('ADMIN','HOST')")
+    public ResponseEntity<ApiResponse<PropertyDto>> updateProperty(
+            @PathVariable Long propertyId,
+            @RequestBody PropertyDto propertyDto) {
+
+        ApiResponse<PropertyDto> response = propertyService.updateProperty(propertyId, propertyDto);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    // PROTECTED → TOKEN REQUIRED
+    @DeleteMapping("/{propertyId}")
+    @PreAuthorize("hasAnyRole('ADMIN','HOST')")
+    public ResponseEntity<ApiResponse<Void>> deleteProperty(@PathVariable Long propertyId) {
+        ApiResponse<Void> response = propertyService.deleteProperty(propertyId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
+
+

@@ -141,7 +141,7 @@ public class UserServiceImpl implements IUserService {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getEmail(), 
+                            request.getEmail(),
                             request.getPassword()
                     )
             );
@@ -154,14 +154,17 @@ public class UserServiceImpl implements IUserService {
 
         if (!user.getIsActive())
             return new ApiResponse<>(403, "Account Disabled", null);
-        
+
         if (!user.getIsEmailVerified()) {
             return new ApiResponse<>(403, "Please verify your email before logging in", null);
         }
 
-
+       
         user.setLastLogin(java.time.LocalDateTime.now());
         userRepo.save(user);
+
+       
+        emailService.sendLoginNotification(user.getEmail(), user.getFullName());
 
         AuthResponse auth = AuthResponse.builder()
                 .accessToken(jwtService.generateAccessToken(user))
@@ -174,6 +177,7 @@ public class UserServiceImpl implements IUserService {
 
         return new ApiResponse<>(200, "Login Successful", auth);
     }
+
     
     @Override
     public ApiResponse<UserResponse> deleteUserById(Long id){

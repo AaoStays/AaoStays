@@ -40,4 +40,27 @@ public class EmailService {
         rest.exchange(RESEND_URL, HttpMethod.POST, request, String.class);
         
     }
+    
+    public void sendLoginNotification(String toEmail, String userName) {
+
+        RestTemplate rest = new RestTemplate();
+
+        Map<String, Object> body = Map.of(
+                "from", "AaoStays <onboarding@resend.dev>",
+                "to", new String[]{toEmail},
+                "subject", "Login Alert - AaoStays",
+                "html", "<p>Hello <b>" + userName + "</b>,</p>"
+                        + "<p>You have successfully logged in to your AaoStays account.</p>"
+                        + "<p>If this wasn't you, please reset your password immediately.</p>"
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(resendApiKey);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+
+        rest.exchange(RESEND_URL, HttpMethod.POST, request, String.class);
+    }
+
 }
