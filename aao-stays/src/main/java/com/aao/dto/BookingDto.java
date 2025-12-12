@@ -22,6 +22,7 @@ public class BookingDto {
 
     private Long bookingId;
     private String bookingReference;
+    private String bookingConfirmationCode;
 
     // Property and Room information
     private Long propertyId;

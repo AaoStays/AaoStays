@@ -25,8 +25,8 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    // 1. Create Booking - Authenticated users
-    @PostMapping
+   
+    @PostMapping("/book")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<BookingDto>> createBooking(
             @RequestBody BookingRequestDto bookingRequestDto) {
@@ -35,8 +35,8 @@ public class BookingController {
     }
 
     // 2. Get Booking by ID - Authenticated users (own bookings) or Admin
-    @GetMapping("/{bookingId}")
-    @PreAuthorize("isAuthenticated()")
+    @GetMapping("getBooking/{bookingId}")
+    @PreAuthorize("hasAnyRole('ADMIN','HOST')")
     public ResponseEntity<ApiResponse<BookingDto>> getBookingById(@PathVariable Long bookingId) {
         ApiResponse<BookingDto> response = bookingService.getBookingById(bookingId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
@@ -52,8 +52,8 @@ public class BookingController {
     }
 
     // 4. List All Bookings with Filters - Admin only
-    @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/getAllbookingsOfUser")
+    @PreAuthorize("hasAnyRole('ADMIN','HOST')")
     public ResponseEntity<ApiResponse<List<BookingDto>>> getAllBookings(
             @RequestParam(required = false) BookingStatus status,
             @RequestParam(required = false) Long propertyId,
@@ -83,7 +83,7 @@ public class BookingController {
     }
 
     // 7. Cancel Booking - Authenticated users (own bookings) or Admin
-    @PostMapping("/{bookingId}/cancel")
+    @PostMapping("/cancel/{bookingId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<BookingDto>> cancelBooking(
             @PathVariable Long bookingId,
@@ -93,7 +93,7 @@ public class BookingController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    // 8. Calculate Price - Public endpoint
+  
     @PostMapping("/calculate-price")
     public ResponseEntity<ApiResponse<PriceBreakdownDto>> calculatePrice(
             @RequestBody PriceCalculationRequestDto priceRequest) {
@@ -101,8 +101,8 @@ public class BookingController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    // 9. Check Property Availability - Public endpoint
-    @GetMapping("/properties/{propertyId}/availability")
+    
+    @GetMapping("/properties/availability/{propertyId}")
     public ResponseEntity<ApiResponse<Boolean>> checkPropertyAvailability(
             @PathVariable Long propertyId,
             @RequestParam(required = false) Long roomId,

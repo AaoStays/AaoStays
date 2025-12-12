@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BookingConfirmDto {
 
-    private String paymentMethod; // e.g., "razorpay", "stripe", "cash"
-    private String transactionId; // Payment transaction ID
+    private String paymentMethod; 
+    private String transactionId; 
 }

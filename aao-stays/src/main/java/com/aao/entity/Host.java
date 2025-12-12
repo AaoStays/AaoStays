@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})   // IMPORTANT FIX
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})  
 @Table(name = "HOST", indexes = {
         @Index(name = "idx_user_id", columnList = "user_id"),
         @Index(name = "idx_is_superhost", columnList = "is_superhost"),

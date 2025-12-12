@@ -3,10 +3,12 @@ package com.aao.serviceImpl;
 import com.aao.dto.*;
 import com.aao.entity.*;
 import com.aao.repo.BookingRepository;
+import com.aao.repo.HostRepo;
 import com.aao.repo.PropertyRepository;
 import com.aao.repo.RoomRepository;
 import com.aao.repo.UserRepo;
 import com.aao.response.ApiResponse;
+import com.aao.service.EmailService;
 import com.aao.serviceInterface.BookingService;
 import com.aao.utils.BookingMapper;
 import com.aao.utils.BookingReferenceGenerator;
@@ -19,8 +21,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,14 +37,25 @@ public class BookingServiceImpl implements BookingService {
     private final UserRepo userRepo;
     private final BookingMapper bookingMapper;
     private final BookingReferenceGenerator bookingReferenceGenerator;
+    private final HostRepo hostRepo;
+    
+    private final EmailService emailService;
 
     private static final BigDecimal TAX_RATE = new BigDecimal("0.12"); // 12% tax
+    
+    
+    
+    
+    private String generateConfirmationCode() {
+        String random = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        return "CONF-" + random;
+    }
+
 
     @Override
     @Transactional
     public ApiResponse<BookingDto> createBooking(BookingRequestDto bookingRequestDto) {
 
-        // Validate required fields
         if (bookingRequestDto.getPropertyId() == null) {
             return new ApiResponse<>(400, "Property ID is required", null);
         }
@@ -50,7 +65,6 @@ public class BookingServiceImpl implements BookingService {
         if (bookingRequestDto.getCheckInDate() == null || bookingRequestDto.getCheckOutDate() == null) {
             return new ApiResponse<>(400, "Check-in and check-out dates are required", null);
         }
-
         if (bookingRequestDto.getCheckInDate().isBefore(LocalDate.now())) {
             return new ApiResponse<>(400, "Check-in date cannot be in the past", null);
         }
@@ -59,37 +73,30 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Property property = propertyRepository.findById(bookingRequestDto.getPropertyId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Property not found with ID: " + bookingRequestDto.getPropertyId()));
+                .orElseThrow(() -> new IllegalArgumentException("Property not found with ID: " + bookingRequestDto.getPropertyId()));
 
         Room room = null;
         if (bookingRequestDto.getRoomId() != null) {
             room = roomRepository.findById(bookingRequestDto.getRoomId())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "Room not found with ID: " + bookingRequestDto.getRoomId()));
-
-            if (!room.getPropertyId().equals(property.getPropertyId())) {
-                return new ApiResponse<>(400, "Room does not belong to the specified property", null);
-            }
+                    .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + bookingRequestDto.getRoomId()));
         }
 
-        // Verify user exists
         User user = userRepo.findById(bookingRequestDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "User not found with ID: " + bookingRequestDto.getUserId()));
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + bookingRequestDto.getUserId()));
 
-        // Check availability
         ApiResponse<Boolean> availabilityCheck = checkAvailability(
                 bookingRequestDto.getPropertyId(),
                 bookingRequestDto.getRoomId(),
                 bookingRequestDto.getCheckInDate(),
-                bookingRequestDto.getCheckOutDate());
+                bookingRequestDto.getCheckOutDate()
+        );
 
         if (!availabilityCheck.getData()) {
             return new ApiResponse<>(409, "Property/Room not available for selected dates", null);
-        }
-
-        // Calculate pricing
+        }  
+        
+        
+ 
         PriceCalculationRequestDto priceRequest = PriceCalculationRequestDto.builder()
                 .propertyId(bookingRequestDto.getPropertyId())
                 .roomId(bookingRequestDto.getRoomId())
@@ -98,33 +105,30 @@ public class BookingServiceImpl implements BookingService {
                 .numberOfGuests(bookingRequestDto.getNumberOfGuests())
                 .couponCode(bookingRequestDto.getCouponCode())
                 .build();
+        
+        
 
         ApiResponse<PriceBreakdownDto> priceResponse = calculatePrice(priceRequest);
         PriceBreakdownDto priceBreakdown = priceResponse.getData();
+        String confirmationCode = generateConfirmationCode();
 
-        // Create booking
         Booking booking = new Booking();
         booking.setBookingReference(bookingReferenceGenerator.generateReference());
+        booking.setBookingConfirmationCode(confirmationCode);
         booking.setProperty(property);
         booking.setRoom(room);
         booking.setUser(user);
+        booking.setPropertyId(property.getPropertyId());
+        booking.setRoomId(room != null ? room.getRoomId() : null);
+        booking.setUserId(user.getId());
         booking.setCouponId(bookingRequestDto.getCouponId());
-
         booking.setCheckInDate(bookingRequestDto.getCheckInDate());
         booking.setCheckOutDate(bookingRequestDto.getCheckOutDate());
         booking.setNumberOfNights(priceBreakdown.getNumberOfNights());
-
         booking.setNumberOfGuests(bookingRequestDto.getNumberOfGuests());
-        booking.setNumberOfAdults(bookingRequestDto.getNumberOfAdults() != null
-                ? bookingRequestDto.getNumberOfAdults()
-                : 1);
-        booking.setNumberOfChildren(bookingRequestDto.getNumberOfChildren() != null
-                ? bookingRequestDto.getNumberOfChildren()
-                : 0);
-        booking.setNumberOfInfants(bookingRequestDto.getNumberOfInfants() != null
-                ? bookingRequestDto.getNumberOfInfants()
-                : 0);
-
+        booking.setNumberOfAdults(bookingRequestDto.getNumberOfAdults() != null ? bookingRequestDto.getNumberOfAdults() : 1);
+        booking.setNumberOfChildren(bookingRequestDto.getNumberOfChildren() != null ? bookingRequestDto.getNumberOfChildren() : 0);
+        booking.setNumberOfInfants(bookingRequestDto.getNumberOfInfants() != null ? bookingRequestDto.getNumberOfInfants() : 0);
         booking.setBasePrice(priceBreakdown.getBasePrice());
         booking.setExtraGuestCharges(priceBreakdown.getExtraGuestCharges());
         booking.setCleaningFee(priceBreakdown.getCleaningFee());
@@ -132,14 +136,46 @@ public class BookingServiceImpl implements BookingService {
         booking.setDiscountAmount(priceBreakdown.getDiscountAmount());
         booking.setTaxAmount(priceBreakdown.getTaxAmount());
         booking.setTotalAmount(priceBreakdown.getTotalAmount());
-
         booking.setSpecialRequests(bookingRequestDto.getSpecialRequests());
-        booking.setBookingStatus(BookingStatus.PENDING);
+        booking.setBookingStatus(BookingStatus.ACCEPTED);
         booking.setPaymentStatus(PaymentStatus.PENDING);
 
         Booking savedBooking = bookingRepository.save(booking);
-        return new ApiResponse<>(201, "Booking created successfully",
-                bookingMapper.toDto(savedBooking));
+        
+        
+        Host host = property.getHost();
+        
+        host.setTotalBookings(host.getTotalBookings()+1);
+        hostRepo.save(host);
+        
+ 
+        host.setTotalEarnings(
+                host.getTotalEarnings().add(savedBooking.getTotalAmount())
+        );
+
+        YearMonth currentMonth = YearMonth.now();
+        YearMonth bookingMonth = YearMonth.from(savedBooking.getCheckInDate());
+
+        if (currentMonth.equals(bookingMonth)) {
+            host.setEarningsPerMonth(
+                    host.getEarningsPerMonth().add(savedBooking.getTotalAmount())
+            );
+        }
+
+   
+    emailService.sendBookingEmail(
+             savedBooking.getUser().getEmail(),
+             savedBooking.getUser().getFullName(),
+             savedBooking.getBookingReference(),
+             savedBooking.getBookingConfirmationCode(),
+             savedBooking.getProperty().getPropertyName(),
+             savedBooking.getCheckInDate(),
+             savedBooking.getCheckOutDate(),
+             savedBooking.getTotalAmount()
+     );
+
+        
+        return new ApiResponse<>(201, "Booking created successfully", bookingMapper.toDto(savedBooking));
     }
 
     @Override
@@ -318,8 +354,14 @@ public class BookingServiceImpl implements BookingService {
         booking.setCancelledBy(cancelledBy);
 
         Booking savedBooking = bookingRepository.save(booking);
+        
+        emailService.sendCancellationEmail(savedBooking.getUser().getEmail(),
+        		                           savedBooking.getUser().getFullName(),
+        		                           savedBooking.getProperty().getPropertyName());
         return new ApiResponse<>(200, "Booking cancelled successfully", bookingMapper.toDto(savedBooking));
     }
+    
+      
 
     @Override
     public ApiResponse<PriceBreakdownDto> calculatePrice(PriceCalculationRequestDto priceRequest) {

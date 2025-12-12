@@ -59,7 +59,8 @@ public class RoomServiceImpl implements RoomService {
         // Validate property exists
         if (!propertyRepository.existsById(propertyId)) {
             throw new IllegalArgumentException("Property not found with ID: " + propertyId);
-        }
+        } 
+        
 
         List<Room> rooms = roomRepository.findByProperty_PropertyId(propertyId);
         List<RoomResponseDto> roomDtos = rooms.stream()
@@ -101,13 +102,18 @@ public class RoomServiceImpl implements RoomService {
             BigDecimal maxPrice,
             RoomStatus roomStatus) {
 
-        // Normalize string parameters
-        roomType = (roomType == null || roomType.trim().isEmpty()) ? null : roomType.trim();
+        
+        if (roomType != null && !roomType.isBlank()) {
+            roomType = roomType.trim().toLowerCase();
+        } else {
+            roomType = null;
+        }
 
         List<Room> rooms = roomRepository.searchRooms(roomType, minPrice, maxPrice, roomStatus);
 
+      
         if (rooms.isEmpty()) {
-            return new ApiResponse<>(204, "No rooms matched filter criteria", null);
+            return new ApiResponse<>(200, "No rooms matched filter criteria", List.of());
         }
 
         List<RoomResponseDto> roomDtos = rooms.stream()
@@ -116,6 +122,7 @@ public class RoomServiceImpl implements RoomService {
 
         return new ApiResponse<>(200, "Rooms retrieved successfully", roomDtos);
     }
+
 
     @Override
     @Transactional(readOnly = true)

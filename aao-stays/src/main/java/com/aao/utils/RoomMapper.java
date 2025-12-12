@@ -37,7 +37,7 @@ public class RoomMapper {
     public RoomResponseDto toDto(Room room) {
         RoomResponseDto dto = new RoomResponseDto();
         dto.setRoomId(room.getRoomId());
-       
+        dto.setPropertyId(room.getProperty().getPropertyId());
         dto.setRoomNumber(room.getRoomNumber());
         dto.setRoomType(room.getRoomType());
         dto.setRoomName(room.getRoomName());

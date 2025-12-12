@@ -32,28 +32,28 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Transactional
     public ApiResponse<EmployeeDto> createEmployee(EmployeeRequestDto employeeRequestDto) {
 
-        // Validate user ID
+  
         if (employeeRequestDto.getUserId() == null) {
             return new ApiResponse<>(400, "User ID cannot be null", null);
         }
 
-        // Verify User exists
+ 
         User user = userRepo.findById(employeeRequestDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "User not found with ID: " + employeeRequestDto.getUserId()));
 
-        // Check if user is already an employee
+    
         if (employeeRepository.existsByUser_Id(user.getId())) {
             return new ApiResponse<>(400, "User is already an employee", null);
         }
 
-        // Validate employee code uniqueness
+      
         if (employeeRequestDto.getEmployeeCode() != null
                 && employeeRepository.existsByEmployeeCode(employeeRequestDto.getEmployeeCode())) {
             return new ApiResponse<>(400, "Employee code already exists", null);
         }
 
-        // Create new employee
+      
         Employee employee = new Employee();
         employee.setUser(user);
         employee.setEmployeeRole(employeeRequestDto.getEmployeeRole());

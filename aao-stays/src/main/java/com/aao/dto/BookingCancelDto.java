@@ -14,6 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BookingCancelDto {
 
-    private String cancellationReason; // Required - reason for cancellation
-    private Boolean refundRequested; // Whether refund is requested
+    private String cancellationReason; 
+    private Boolean refundRequested; 
 }

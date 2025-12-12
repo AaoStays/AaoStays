@@ -2,6 +2,7 @@ package com.aao.service;
 
 import com.aao.entity.User;
 import com.aao.repo.UserRepo;
+import com.aao.security.CustomUserDetails;
 
 import java.util.List;
 
@@ -32,10 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 new SimpleGrantedAuthority("ROLE_" + role)
         );
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPasswordHash(),
-                authorities
-        );
+        return new CustomUserDetails(user, authorities);
+
     }
 }

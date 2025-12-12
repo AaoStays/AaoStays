@@ -19,7 +19,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     @Query("""
             SELECT r FROM Room r
-            WHERE (:roomType IS NULL OR LOWER(COALESCE(r.roomType, '')) = LOWER(:roomType))
+            WHERE (:roomType IS NULL OR LOWER(COALESCE(r.roomType, '')) = :roomType)
             AND (:minPrice IS NULL OR r.pricePerNight >= :minPrice)
             AND (:maxPrice IS NULL OR r.pricePerNight <= :maxPrice)
             AND (:roomStatus IS NULL OR r.roomStatus = :roomStatus)
@@ -29,6 +29,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice,
             @Param("roomStatus") RoomStatus roomStatus);
+
 
     @Query("""
             SELECT MIN(r.pricePerNight), MAX(r.pricePerNight)

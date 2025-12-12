@@ -16,19 +16,24 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class BookingRequestDto {
 
-    private Long propertyId; // Required
-    private Long roomId; // Optional (can book entire property)
-    private Long userId; // Required - guest making the booking
-    private Long couponId; // Optional - for discounts
+	  private Long propertyId;        
+	    private Long roomId;            
 
-    private LocalDate checkInDate; // Required
-    private LocalDate checkOutDate; // Required
+	    private Long userId;           
 
-    private Integer numberOfGuests; // Required - total guest count
-    private Integer numberOfAdults; // Default 1
-    private Integer numberOfChildren; // Default 0
-    private Integer numberOfInfants; // Default 0
+	    private Long couponId;          
+	    private String couponCode;     
 
-    private String specialRequests; // Optional
-    private String couponCode; // Optional - alternative to couponId
+	    private LocalDate checkInDate;  
+	    private LocalDate checkOutDate; 
+
+	    private Integer numberOfGuests;  
+	    @Builder.Default
+	    private Integer numberOfAdults = 1; 
+	    @Builder.Default
+	    private Integer numberOfChildren = 0; 
+	    @Builder.Default
+	    private Integer numberOfInfants = 0;  
+
+	    private String specialRequests;  
 }

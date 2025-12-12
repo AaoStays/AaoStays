@@ -25,45 +25,69 @@ public class Booking {
     @Column(name = "booking_reference", unique = true, nullable = false, length = 50)
     private String bookingReference;
 
-    // Relationships
+    @Column(name = "booking_confirmation", unique = true, nullable = true, length = 50)
+    private String bookingConfirmationCode;
+
+
+    /* ===========================
+       RELATIONSHIPS
+       =========================== */
+
+    // ----- PROPERTY -----
     @Column(name = "property_id", insertable = false, updatable = false)
     private Long propertyId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "property_id", nullable = false)
     @ToString.Exclude
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Property property;
 
+
+    // ----- ROOM -----
     @Column(name = "room_id", insertable = false, updatable = false)
     private Long roomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     @ToString.Exclude
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Room room;
 
+
+    // ----- USER -----
     @Column(name = "user_id", insertable = false, updatable = false)
     private Long userId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
-    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private User user;
+
 
     @Column(name = "coupon_id")
     private Long couponId;
 
-    // Booking dates
+
+    /* ===========================
+       BOOKING DATES
+       =========================== */
+
     @Column(name = "check_in_date", nullable = false)
     private LocalDate checkInDate;
 
     @Column(name = "check_out_date", nullable = false)
     private LocalDate checkOutDate;
 
-    // Guest information
+    @Column(name = "number_of_nights", nullable = false)
+    private Integer numberOfNights;
+
+
+    /* ===========================
+       GUEST DETAILS
+       =========================== */
+
     @Column(name = "number_of_guests", nullable = false)
     private Integer numberOfGuests;
 
@@ -76,10 +100,11 @@ public class Booking {
     @Column(name = "number_of_infants")
     private Integer numberOfInfants = 0;
 
-    @Column(name = "number_of_nights", nullable = false)
-    private Integer numberOfNights;
 
-    // Pricing
+    /* ===========================
+       PRICING
+       =========================== */
+
     @Column(name = "base_price", nullable = false, precision = 12, scale = 2)
     private BigDecimal basePrice;
 
@@ -101,7 +126,11 @@ public class Booking {
     @Column(name = "total_amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalAmount;
 
-    // Status
+
+    /* ===========================
+       STATUS
+       =========================== */
+
     @Enumerated(EnumType.STRING)
     @Column(name = "booking_status")
     private BookingStatus bookingStatus = BookingStatus.PENDING;
@@ -110,7 +139,11 @@ public class Booking {
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
-    // Additional information
+
+    /* ===========================
+       EXTRA INFO
+       =========================== */
+
     @Column(name = "special_requests", columnDefinition = "TEXT")
     private String specialRequests;
 
@@ -129,7 +162,11 @@ public class Booking {
     @Column(name = "refund_processed_at")
     private LocalDateTime refundProcessedAt;
 
-    // Timestamps
+
+    /* ===========================
+       TIMESTAMPS
+       =========================== */
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -146,6 +183,7 @@ public class Booking {
 
     @Column(name = "checked_out_at")
     private LocalDateTime checkedOutAt;
+
 
     @PreUpdate
     public void onUpdate() {

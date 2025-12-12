@@ -1,6 +1,7 @@
 package com.aao.serviceInterface;
 
 import com.aao.dto.PropertyDto;
+import com.aao.entity.PropertyStatus;
 import com.aao.response.ApiResponse;
 
 import java.math.BigDecimal;
@@ -19,5 +20,5 @@ public interface PropertyService {
     
     ApiResponse<List<PropertyDto>>serachProperty(String  city,String state, String categoryType,String propertyType,BigDecimal minPrice,BigDecimal maxPrice);
     
-    
+     ApiResponse<PropertyDto> updatePropertyStaus(Long PropertyId, PropertyStatus newStaus);
 }

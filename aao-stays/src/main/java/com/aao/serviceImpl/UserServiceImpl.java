@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import com.aao.entity.UserType;
 import com.aao.repo.HostRepo;
 import com.aao.repo.UserRepo;
 import com.aao.response.ApiResponse;
+import com.aao.security.CustomUserDetails;
 import com.aao.security.JwtService;
 import com.aao.service.EmailService;
 import com.aao.service.VerificationTokenService;
@@ -149,8 +151,9 @@ public class UserServiceImpl implements IUserService {
             return new ApiResponse<>(401, "Invalid Email or Password", null);
         }
 
+        
         User user = userRepo.findByEmail(request.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User Not Found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!user.getIsActive())
             return new ApiResponse<>(403, "Account Disabled", null);
@@ -159,11 +162,9 @@ public class UserServiceImpl implements IUserService {
             return new ApiResponse<>(403, "Please verify your email before logging in", null);
         }
 
-       
         user.setLastLogin(java.time.LocalDateTime.now());
         userRepo.save(user);
 
-       
         emailService.sendLoginNotification(user.getEmail(), user.getFullName());
 
         AuthResponse auth = AuthResponse.builder()
@@ -177,6 +178,8 @@ public class UserServiceImpl implements IUserService {
 
         return new ApiResponse<>(200, "Login Successful", auth);
     }
+
+
 
     
     @Override
@@ -220,7 +223,7 @@ public class UserServiceImpl implements IUserService {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
-        // Convert String → Enum safely
+       
         UserType userType = UserType.valueOf(newRole.toUpperCase());
 
         // Update user role
@@ -246,7 +249,7 @@ public class UserServiceImpl implements IUserService {
             host.setIdVerified(false);
             host.setStatus("ACTIVE");
 
-            // Required NOT NULL fields
+         
             host.setTotalProperties(0);
             host.setActiveProperties(0);
             host.setTotalBookings(0);
@@ -256,7 +259,7 @@ public class UserServiceImpl implements IUserService {
             host.setResponseRate(BigDecimal.ZERO);
             host.setResponseTime(0);
 
-            hostRepo.save(host);   // ⭐ THIS CREATES THE HOST ENTRY
+            hostRepo.save(host);  
         }
 
         return new ApiResponse<>(200, "Role updated & host created if required", null);

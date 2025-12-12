@@ -1,11 +1,16 @@
 package com.aao.controller;
 
-import com.aao.dto.HostDto;
+import com.aao.dto.HostOnboardingRequestDto;
+import com.aao.dto.HostResponseDto;
 import com.aao.response.ApiResponse;
+import com.aao.security.CustomUserDetails;
 import com.aao.serviceInterface.HostService;
 
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,55 +23,70 @@ public class HostController {
     private final HostService hostService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<HostDto>> createHost(@RequestBody HostDto hostDto) {
-        ApiResponse<HostDto> response = hostService.createHost(hostDto);
+    public ResponseEntity<ApiResponse<HostResponseDto>> createHost(@RequestBody HostOnboardingRequestDto hostDto) {
+        ApiResponse<HostResponseDto> response = hostService.createHost(hostDto);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @GetMapping("/{hostId}")
-    public ResponseEntity<ApiResponse<HostDto>> getHostById(@PathVariable Long hostId) {
-        ApiResponse<HostDto> response = hostService.getHostById(hostId);
+    @GetMapping("/{hostId}") 
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<HostResponseDto>> getHostById(@PathVariable Long hostId) {
+        ApiResponse<HostResponseDto> response = hostService.getHostById(hostId);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
-
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<HostDto>>> getAllHosts() {
-        ApiResponse<List<HostDto>> response = hostService.getAllHosts();
+    
+    @GetMapping("/getAll")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<List<HostResponseDto>>> getAllHosts() {
+        ApiResponse<List<HostResponseDto>> response = hostService.getAllHosts();
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
     @PutMapping("/{hostId}")
-    public ResponseEntity<ApiResponse<HostDto>> updateHost(@PathVariable Long hostId, @RequestBody HostDto hostDto) {
-        ApiResponse<HostDto> response = hostService.updateHost(hostId, hostDto);
+    public ResponseEntity<ApiResponse<HostResponseDto>> updateHost(@PathVariable Long hostId, @RequestBody HostOnboardingRequestDto hostDto) {
+        ApiResponse<HostResponseDto> response = hostService.updateHost(hostId, hostDto);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @DeleteMapping("/{hostId}")
+    @DeleteMapping("/delete/{hostId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deleteHost(@PathVariable Long hostId) {
         ApiResponse<Void> response = hostService.deleteHost(hostId);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
     @PostMapping("/{hostId}/verify-identity")
-    public ResponseEntity<ApiResponse<HostDto>> verifyHostIdentity(@PathVariable Long hostId) {
-        ApiResponse<HostDto> response = hostService.verifyHostIdentity(hostId);
+    public ResponseEntity<ApiResponse<HostResponseDto>> verifyHostIdentity(@PathVariable Long hostId) {
+        ApiResponse<HostResponseDto> response = hostService.verifyHostIdentity(hostId);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
-
-    @PatchMapping("/{hostId}/activate")
+    
+    @PatchMapping("/activate/{hostId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> activateHost(@PathVariable Long hostId) {
         ApiResponse<Void> response = hostService.activateHost(hostId);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    @PatchMapping("/{hostId}/deactivate")
+    @PatchMapping("/deactivate/{hostId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> deactivateHost(@PathVariable Long hostId) {
         ApiResponse<Void> response = hostService.deactivateHost(hostId);
         return ResponseEntity.status(response.getStatusCode()).body(response);
-    }
-    @PostMapping("/complete-profile")
-    public ResponseEntity<ApiResponse<HostDto>> completeProfile(@RequestBody HostDto hostDto) {
-        ApiResponse<HostDto> response = hostService.completeHostProfile(hostDto);
+    } 
+    @PostMapping("/completeProfile")
+    @PreAuthorize("hasRole('HOST')")
+    public ResponseEntity<ApiResponse<HostResponseDto>> completeProfile(
+            @RequestBody HostOnboardingRequestDto hostDto,
+            Authentication authentication) {
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Long currentUserId = userDetails.getUser().getId();
+
+       
+        hostDto.setUserId(currentUserId);
+
+        ApiResponse<HostResponseDto> response = hostService.completeHostProfile(hostDto);
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 

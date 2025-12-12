@@ -29,6 +29,7 @@ public class BookingMapper {
         // Basic booking information
         dto.setBookingId(booking.getBookingId());
         dto.setBookingReference(booking.getBookingReference());
+        dto.setBookingConfirmationCode(booking.getBookingConfirmationCode());
 
         // Property and Room information
         dto.setPropertyId(booking.getPropertyId());

@@ -1,14 +1,15 @@
 package com.aao.serviceImpl;
 
-import com.aao.dto.HostDto;
+import com.aao.dto.HostOnboardingRequestDto;
+import com.aao.dto.HostResponseDto;
 import com.aao.entity.Host;
 import com.aao.entity.User;
-import com.aao.entity.UserType;
 import com.aao.repo.HostRepo;
 import com.aao.repo.UserRepo;
 import com.aao.response.ApiResponse;
 import com.aao.serviceInterface.HostService;
 import com.aao.utils.HostMapper;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,203 +23,205 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HostServiceImpl implements HostService {
 
-    private final HostRepo hostRepo;
-    private final UserRepo userRepo;
-    private final HostMapper hostMapper;
-    @Override
-    @Transactional
-    public ApiResponse<HostDto> createHost(HostDto hostDto) {
+	private final HostRepo hostRepo;
+	private final UserRepo userRepo;
+	private final HostMapper hostMapper;
 
-        Long userId = hostDto.getUserId();
-        if (userId == null) {
-            return new ApiResponse<>(400, "User ID cannot be null", null);
-        }
+	// ✔ CREATE HOST (Admin assigns host role)
+	@Override
+	@Transactional
+	public ApiResponse<HostResponseDto> createHost(HostOnboardingRequestDto hostDto) {
 
-        User user = userRepo.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
+		Long userId = hostDto.getUserId();
+		if (userId == null) {
+			return new ApiResponse<>(400, "User ID cannot be null", null);
+		}
 
-        
-        if (hostRepo.existsByUser_Id(user.getId())) {
-            return new ApiResponse<>(400, "User is already a host", null);
-        }
+		User user = userRepo.findById(userId)
+				.orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + userId));
 
-       
-        Host host = new Host();
-        host.setUser(user);
+		if (hostRepo.existsByUser_Id(user.getId())) {
+			return new ApiResponse<>(400, "User is already a host", null);
+		}
 
-        host.setBio(null);
-        host.setProfilePicture(null);
-        host.setLanguagesSpoken(null);
-        host.setGovernmentIdType(null);
-        host.setGovernmentIdNumber(null);
+		Host host = new Host();
+		host.setUser(user);
 
-     
-        host.setHostSince(LocalDate.now());
-        host.setIsSuperhost(false);
-        host.setIsVerified(false);
-        host.setIdVerified(false);
-        host.setVerificationStatus("PENDING");
-        host.setStatus("ACTIVE");
+		// defaults
+		host.setBio(null);
+		host.setLanguagesSpoken(null);
+		host.setGovernmentIdType(null);
+		host.setGovernmentIdNumber(null);
 
-       
-        host.setTotalProperties(0);
-        host.setActiveProperties(0);
-        host.setTotalBookings(0);
-        host.setTotalEarnings(BigDecimal.ZERO);
-        host.setEarningsPerMonth(BigDecimal.ZERO);
-        host.setAverageRating(BigDecimal.ZERO);
-        host.setResponseRate(BigDecimal.ZERO);
-        host.setResponseTime(0);
-        
-        
-        host.setIsProfileCompleted(false);
+		host.setHostSince(LocalDate.now());
+		host.setIsSuperhost(false);
+		host.setIsVerified(false);
+		host.setIdVerified(false);
+		host.setVerificationStatus("PENDING");
+		host.setStatus("ACTIVE");
 
-        // If user provided updated address
-        if (hostDto.getAddress() != null) {
-            user.setAddress(hostDto.getAddress());
-            userRepo.save(user);
-        }
+		host.setTotalProperties(0);
+		host.setActiveProperties(0);
+		host.setTotalBookings(0);
+		host.setTotalEarnings(BigDecimal.ZERO);
+		host.setEarningsPerMonth(BigDecimal.ZERO);
+		host.setAverageRating(BigDecimal.ZERO);
+		host.setResponseRate(BigDecimal.ZERO);
+		host.setResponseTime(0);
 
-        Host savedHost = hostRepo.save(host);
-        return new ApiResponse<>(201, "Host account created successfully", hostMapper.toDto(savedHost));
-    }
+		host.setIsProfileCompleted(false);
 
-    @Override
-    public ApiResponse<HostDto> getHostById(Long hostId) {
-        if (hostId == null) {
-            return new ApiResponse<>(400, "Host ID cannot be null", null);
-        }
-        Host host = hostRepo.findById(hostId)
-                .orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
-        return new ApiResponse<>(200, "Host details retrieved successfully", hostMapper.toDto(host));
-    }
+		Host savedHost = hostRepo.save(host);
 
-    @Override
-    public ApiResponse<List<HostDto>> getAllHosts() {
-        List<HostDto> hosts = hostRepo.findAll().stream()
-                .map(hostMapper::toDto)
-                .collect(Collectors.toList());
-        return new ApiResponse<>(200, "Hosts retrieved successfully", hosts);
-    }
+		return new ApiResponse<>(201, "Host account created successfully", hostMapper.toResponseDto(savedHost));
+	}
 
-    @Override
-    @Transactional
-    public ApiResponse<HostDto> updateHost(Long hostId, HostDto hostDto) {
-        if (hostId == null) {
-            return new ApiResponse<>(400, "Host ID cannot be null", null);
-        }
-        Host host = hostRepo.findById(hostId)
-                .orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
+	// ✔ GET HOST BY ID
+	@Override
+	public ApiResponse<HostResponseDto> getHostById(Long hostId) {
+		if (hostId == null) {
+			return new ApiResponse<>(400, "Host ID cannot be null", null);
+		}
 
-        if (hostDto.getCompanyName() != null)
-            host.setCompanyName(hostDto.getCompanyName());
-        if (hostDto.getGstNumber() != null)
-            host.setGstNumber(hostDto.getGstNumber());
-        if (hostDto.getBio() != null)
-            host.setBio(hostDto.getBio());
-        if (hostDto.getProfilePicture() != null)
-            host.setProfilePicture(hostDto.getProfilePicture());
-        if (hostDto.getLanguagesSpoken() != null)
-            host.setLanguagesSpoken(hostDto.getLanguagesSpoken());
+		Host host = hostRepo.findById(hostId)
+				.orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
 
-        if (hostDto.getAddress() != null) {
-            User user = host.getUser();
-            user.setAddress(hostDto.getAddress());
-            userRepo.save(user);
-        }
+		return new ApiResponse<>(200, "Host details retrieved successfully", hostMapper.toResponseDto(host));
+	}
 
-        Host savedHost = hostRepo.save(host);
-        return new ApiResponse<>(200, "Host updated successfully", hostMapper.toDto(savedHost));
-    }
+	@Override
+	public ApiResponse<List<HostResponseDto>> getAllHosts() {
 
-    @Override
-    public ApiResponse<Void> deleteHost(Long hostId) {
-        if (hostId == null) {
-            return new ApiResponse<>(400, "Host ID cannot be null", null);
-        }
-        if (!hostRepo.existsById(hostId)) {
-            throw new IllegalArgumentException("Host not found with ID: " + hostId);
-        }
-        hostRepo.deleteById(hostId);
-        return new ApiResponse<>(200, "Operation successful", null);
-    }
+		List<HostResponseDto> hosts = hostRepo.findAll().stream().map(hostMapper::toResponseDto)
+				.collect(Collectors.toList());
 
-    @Override
-    @Transactional
-    public ApiResponse<HostDto> verifyHostIdentity(Long hostId) {
-        if (hostId == null) {
-            return new ApiResponse<>(400, "Host ID cannot be null", null);
-        }
-        Host host = hostRepo.findById(hostId)
-                .orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
+		return new ApiResponse<>(200, "Hosts retrieved successfully", hosts);
+	}
 
-        host.setIsVerified(true);
-        host.setVerificationStatus("VERIFIED");
-        host.setIdVerified(true);
+	@Override
+	@Transactional
+	public ApiResponse<HostResponseDto> updateHost(Long hostId, HostOnboardingRequestDto hostDto) {
 
-        Host savedHost = hostRepo.save(host);
-        return new ApiResponse<>(200, "Host identity verified successfully", hostMapper.toDto(savedHost));
-    }
+		if (hostId == null) {
+			return new ApiResponse<>(400, "Host ID cannot be null", null);
+		}
 
-    @Override
-    @Transactional
-    public ApiResponse<Void> activateHost(Long hostId) {
-        if (hostId == null) {
-            return new ApiResponse<>(400, "Host ID cannot be null", null);
-        }
-        Host host = hostRepo.findById(hostId)
-                .orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
-        host.setStatus("ACTIVE");
-        hostRepo.save(host);
-        return new ApiResponse<>(200, "Host status updated successfully", null);
-    }
+		Host host = hostRepo.findById(hostId)
+				.orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
 
-    @Override
-    @Transactional
-    public ApiResponse<Void> deactivateHost(Long hostId) {
-        if (hostId == null) {
-            return new ApiResponse<>(400, "Host ID cannot be null", null);
-        }
-        Host host = hostRepo.findById(hostId)
-                .orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
-        host.setStatus("INACTIVE");
-        hostRepo.save(host);
-        return new ApiResponse<>(200, "Host status updated successfully", null);
-    }
-    
-    @Override
-    @Transactional
-    public ApiResponse<HostDto> completeHostProfile(HostDto hostDto) {
+		if (hostDto.getBio() != null)
+			host.setBio(hostDto.getBio());
+		if (hostDto.getLanguagesSpoken() != null)
+			host.setLanguagesSpoken(hostDto.getLanguagesSpoken());
+		if (hostDto.getGovernmentIdType() != null)
+			host.setGovernmentIdType(hostDto.getGovernmentIdType());
+		if (hostDto.getGovernmentIdNumber() != null)
+			host.setGovernmentIdNumber(hostDto.getGovernmentIdNumber());
 
-        if (hostDto.getUserId() == null) {
-            return new ApiResponse<>(400, "User ID cannot be null", null);
-        }
+		Host savedHost = hostRepo.save(host);
 
-        Host host = hostRepo.findByUser_Id(hostDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Host not found for user ID: " + hostDto.getUserId()));
+		return new ApiResponse<>(200, "Host updated successfully", hostMapper.toResponseDto(savedHost));
+	}
 
-        if (host.getIsProfileCompleted()) {
-            return new ApiResponse<>(400, "Host profile is already completed", null);
-        }
+	@Override
+	public ApiResponse<Void> deleteHost(Long hostId) {
+		if (hostId == null) {
+			return new ApiResponse<>(400, "Host ID cannot be null", null);
+		}
 
-        // Only host-editable fields
-        host.setBio(hostDto.getBio());
-        host.setProfilePicture(hostDto.getProfilePicture());
-        host.setLanguagesSpoken(hostDto.getLanguagesSpoken());
-        host.setGovernmentIdType(hostDto.getGovernmentIdType());
-        host.setGovernmentIdNumber(hostDto.getGovernmentIdNumber());
+		if (!hostRepo.existsById(hostId)) {
+			throw new IllegalArgumentException("Host not found with ID: " + hostId);
+		}
 
-        host.setIsProfileCompleted(true);
-        host.setVerificationStatus("UNDER_REVIEW"); // optional
-        host.setIdVerified(false);                   // must be verified by admin
+		hostRepo.deleteById(hostId);
 
-        Host saved = hostRepo.save(host);
+		return new ApiResponse<>(200, "Operation successful", null);
+	}
 
-        return new ApiResponse<>(200, "Host profile completed successfully", hostMapper.toDto(saved));
-    }
+	// ✔ VERIFY HOST IDENTITY
+	@Override
+	@Transactional
+	public ApiResponse<HostResponseDto> verifyHostIdentity(Long hostId) {
 
-  
+		if (hostId == null) {
+			return new ApiResponse<>(400, "Host ID cannot be null", null);
+		}
 
+		Host host = hostRepo.findById(hostId)
+				.orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
+
+		host.setIsVerified(true);
+		host.setVerificationStatus("VERIFIED");
+		host.setIdVerified(true);
+
+		Host savedHost = hostRepo.save(host);
+
+		return new ApiResponse<>(200, "Host identity verified successfully", hostMapper.toResponseDto(savedHost));
+	}
+
+	
+
+	@Override
+	@Transactional
+	public ApiResponse<Void> activateHost(Long hostId) {
+		if (hostId == null) {
+			return new ApiResponse<>(400, "Host ID cannot be null", null);
+		}
+
+		Host host = hostRepo.findById(hostId)
+				.orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
+
+		host.setStatus("ACTIVE");
+		hostRepo.save(host);
+
+		return new ApiResponse<>(200, "Host activated successfully", null);
+	}
+
+	@Override
+	@Transactional
+	public ApiResponse<Void> deactivateHost(Long hostId) {
+		if (hostId == null) {
+			return new ApiResponse<>(400, "Host ID cannot be null", null);
+		}
+
+		Host host = hostRepo.findById(hostId)
+				.orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
+
+		host.setStatus("INACTIVE");
+		hostRepo.save(host);
+
+		return new ApiResponse<>(200, "Host deactivated successfully", null);
+	}
+
+	@Override
+	public ApiResponse<HostResponseDto> completeHostProfile(HostOnboardingRequestDto hostDto) {
+
+	    if (hostDto.getUserId() == null) {
+	        return new ApiResponse<>(400, "User ID cannot be null", null);
+	    }
+
+	    Host host = hostRepo.findByUser_Id(hostDto.getUserId())
+	            .orElseThrow(() -> new IllegalArgumentException(
+	                    "Host not found for user ID: " + hostDto.getUserId()));
+
+	    if (host.getIsProfileCompleted()) {
+	        return new ApiResponse<>(400, "Host profile is already completed", null);
+	    }
+
+	    if (hostDto.getBio() != null) host.setBio(hostDto.getBio());
+	    if (hostDto.getLanguagesSpoken() != null) host.setLanguagesSpoken(hostDto.getLanguagesSpoken());
+	    if (hostDto.getGovernmentIdType() != null) host.setGovernmentIdType(hostDto.getGovernmentIdType());
+	    if (hostDto.getGovernmentIdNumber() != null) host.setGovernmentIdNumber(hostDto.getGovernmentIdNumber());
+
+	    host.setIsProfileCompleted(true);
+	    host.setVerificationStatus("UNDER_REVIEW");
+	    host.setIdVerified(false);
+
+	    Host saved = hostRepo.save(host);
+
+	    return new ApiResponse<>(200, "Host profile completed successfully",
+	            hostMapper.toResponseDto(saved));
+		
+	}
 
 }

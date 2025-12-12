@@ -37,7 +37,7 @@ public class SecurityConfigure {
 
             .authorizeHttpRequests(auth -> auth
 
-                // PUBLIC ROUTES
+               
                 .requestMatchers("/api/auth/**").permitAll()
 
                
@@ -45,18 +45,30 @@ public class SecurityConfigure {
                     "/api/v1/properties/getAll",
                     "/api/v1/properties/search",
                     "/api/v1/properties/*/images",
-                    "/api/v1/properties/*"  
+                    "/api/v1/properties/*" , 
+                    "/api/v1/bookings/book",
+                    "/api/v1/bookings/properties/availability/**"
                 ).permitAll()
 
                 
                 .requestMatchers("/api/v1/properties").hasAnyRole("ADMIN", "HOST")      
                 .requestMatchers("/api/v1/properties/*").hasAnyRole("ADMIN", "HOST")    
 
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                
                 .requestMatchers("/api/v1/admins/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/upload/image").hasAnyRole("ADMIN", "HOST")
-
-              
+                .requestMatchers("/api/v1/bookings/getBooking/**").hasAnyRole("ADMIN","HOST")
+                .requestMatchers("/api/v1/bookings/reference/**").authenticated()
+                .requestMatchers("/api/v1/bookings/getAllbookingsOfUser").hasAnyRole("ADMIN","HOST")
+                .requestMatchers("/api/v1/bookings/cancel/**") .authenticated()
+//                .requestMatchers("/api/v1/hosts/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/hosts/getAll").hasRole("ADMIN")
+                .requestMatchers("/api/v1/hosts/delete/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/hosts/activate/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/hosts/deactivate/**").hasRole("ADMIN")
+                .requestMatchers("/api/v1/hosts/completeProfile").hasRole("HOST")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                
                 .anyRequest().authenticated()
             )
 
