@@ -2,6 +2,7 @@ package com.aao.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,12 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aao.entity.PropertyImage;
+import com.aao.response.ApiResponse;
 import com.aao.serviceImpl.PropertyImageService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/properties")
+@RequestMapping("/api/v1/properties")
 @RequiredArgsConstructor
 public class PropertyImageController {
    
@@ -27,18 +29,25 @@ public class PropertyImageController {
 	    private final PropertyImageService propertyImageService;
 
 	  
-	    @PostMapping("/{propertyId}/images/upload")
-	    @PreAuthorize("hasAnyRole('ADMIN', 'HOST')")
-	    public ResponseEntity<List<PropertyImage>> uploadImages(
+	    @PostMapping("/images/upload/{propertyId}")
+	    @PreAuthorize("hasAnyRole('ADMIN','HOST')")
+	    public ResponseEntity<ApiResponse<List<PropertyImage>>> uploadImages(
 	            @PathVariable Long propertyId,
-	            @RequestParam("images") MultipartFile[] images
-	    ) {
-	        List<PropertyImage> uploaded = propertyImageService.uploadImages(propertyId, images);
-	        return ResponseEntity.ok(uploaded);
+	            @RequestParam("images") MultipartFile[] files) {
+
+	        List<PropertyImage> images =
+	                propertyImageService.uploadImages(propertyId, files);
+
+	        return ResponseEntity.status(HttpStatus.CREATED)
+	                .body(new ApiResponse<>(
+	                        201,
+	                        "Images uploaded successfully",
+	                        images
+	                ));
 	    }
 
 	  
-	    @PutMapping("/images/{imageId}/primary")
+	    @PutMapping("/images/primary/{imageId}")
 	    public ResponseEntity<PropertyImage> setPrimaryImage(@PathVariable Long imageId) {
 	        PropertyImage updated = propertyImageService.setPrimaryImage(imageId);
 	        return ResponseEntity.ok(updated);

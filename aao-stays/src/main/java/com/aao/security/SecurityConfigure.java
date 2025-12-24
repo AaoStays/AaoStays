@@ -53,6 +53,11 @@ public class SecurityConfigure {
                 
                 .requestMatchers("/api/v1/properties").hasAnyRole("ADMIN", "HOST")      
                 .requestMatchers("/api/v1/properties/*").hasAnyRole("ADMIN", "HOST")    
+                .requestMatchers("/api/v1/properties/images/upload/**").hasAnyRole("ADMIN", "HOST")    
+                .requestMatchers("/api/v1/properties/images/primary/**").hasAnyRole("ADMIN", "HOST")    
+                .requestMatchers("/api/v1/properties/images/**").hasAnyRole("ADMIN", "HOST")    
+                .requestMatchers("/api/v1/properties/addProperty").hasAnyRole("ADMIN", "HOST")   
+                .requestMatchers("/api/v1/properties/hostProperties").hasAnyRole("ADMIN", "HOST")               
 
                 
                 .requestMatchers("/api/v1/admins/**").hasRole("ADMIN")

@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @Data
 @Entity
+@DynamicUpdate
 @Table(name = "PROPERTY", indexes = {
         @Index(name = "idx_host_id", columnList = "host_id"),
         @Index(name = "idx_city", columnList = "city"),

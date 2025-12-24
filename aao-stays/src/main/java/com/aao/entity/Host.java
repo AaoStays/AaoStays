@@ -29,7 +29,7 @@ public class Host {
     @Column(name = "host_id")
     private Long hostId;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 

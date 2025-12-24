@@ -29,32 +29,37 @@ public class PropertyServiceImpl implements PropertyService {
 
 	@Override
 	@Transactional
-	public ApiResponse<PropertyDto> addProperty(PropertyDto propertyDto) {
-		if (propertyDto.getHostId() == null) {
-			throw new IllegalArgumentException("Host ID is required");
-		}
+	public ApiResponse<PropertyDto> addProperty(PropertyDto propertyDto, Long hostId) {
 
-		Host host = hostRepo.findById(propertyDto.getHostId())
-				.orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + propertyDto.getHostId()));
+	    Host host = hostRepo.findById(hostId)
+	            .orElseThrow(() ->
+	                    new IllegalArgumentException("Host not found with ID: " + hostId)
+	            );
 
-		Property property = propertyMapper.toEntity(propertyDto);
-		property.setHost(host);
-		property.setEmployeeId(propertyDto.getEmployeeId()); // Set employee ID directly
+	    Property property = propertyMapper.toEntity(propertyDto);
+	    property.setHost(host);
 
-		// Set defaults if not provided
-		if (property.getPropertyStatus() == null) {
-			property.setPropertyStatus(PropertyStatus.PENDING_APPROVAL);
-		}
-		if (property.getApprovalStatus() == null) {
-			property.setApprovalStatus(ApprovalStatus.PENDING);
-		}
+	    property.setEmployeeId(propertyDto.getEmployeeId());
 
-		Property savedProperty = propertyRepository.save(property);
-		host.setTotalProperties(host.getTotalProperties() + 1);
+	    if (property.getPropertyStatus() == null) {
+	        property.setPropertyStatus(PropertyStatus.PENDING_APPROVAL);
+	    }
+	    if (property.getApprovalStatus() == null) {
+	        property.setApprovalStatus(ApprovalStatus.PENDING);
+	    }
 
-		hostRepo.save(host);
-		return new ApiResponse<>(201, "Property created successfully", propertyMapper.toDto(savedProperty));
+	    Property savedProperty = propertyRepository.save(property);
+
+	    host.setTotalProperties(host.getTotalProperties() + 1);
+	    hostRepo.save(host);
+
+	    return new ApiResponse<>(
+	            201,
+	            "Property created successfully",
+	            propertyMapper.toDto(savedProperty)
+	    );
 	}
+
 
 	@Override
 	@Transactional(readOnly = true)
@@ -166,5 +171,26 @@ public class PropertyServiceImpl implements PropertyService {
 		}
 
 		return new ApiResponse<>(200, "Property status updated successfully", propertyMapper.toDto(savedProperty));
+	}
+
+	@Override
+	@Transactional
+	public ApiResponse<List<PropertyDto>> getPropertyByHostId(Long hostId) {
+	    
+	 
+	    Host host = hostRepo.findById(hostId)
+	            .orElseThrow(() -> new IllegalArgumentException("Host not found with ID: " + hostId));
+	    
+	    List<Property> properties = propertyRepository.findByHost_HostId(hostId);
+	    
+	    if (properties.isEmpty()) {
+	        return new ApiResponse<>(404, "No properties found for this host", null);
+	    }
+	    
+	    List<PropertyDto> propertyDtos = properties.stream()
+	            .map(propertyMapper::toDto)
+	            .collect(Collectors.toList());
+	    
+	    return new ApiResponse<>(200, "Properties fetched successfully", propertyDtos);
 	}
 }

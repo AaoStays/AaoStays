@@ -1,15 +1,16 @@
 package com.aao.controller;
 
 import com.aao.dto.PropertyDto;
-import com.aao.entity.Property;
 import com.aao.entity.PropertyImage;
 import com.aao.response.ApiResponse;
+import com.aao.security.SecurityUtils;
 import com.aao.serviceImpl.PropertyImageService;
 import com.aao.serviceInterface.PropertyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -21,8 +22,9 @@ public class PropertyController {
 
     private final PropertyService propertyService;
     private final PropertyImageService propertyImageService;
+    private final  SecurityUtils securityUtils;
 
-    // PUBLIC → Anyone can browse properties
+   
     @GetMapping("/getAll")
     public ResponseEntity<ApiResponse<List<PropertyDto>>> getAllProperties() {
         ApiResponse<List<PropertyDto>> response = propertyService.getAllProperties();
@@ -63,14 +65,17 @@ public class PropertyController {
     }
 
     // PROTECTED → TOKEN REQUIRED
-    @PostMapping
+    @PostMapping("/addProperty")
     @PreAuthorize("hasAnyRole('ADMIN', 'HOST')")
+    @Transactional
     public ResponseEntity<ApiResponse<PropertyDto>> addProperty(@RequestBody PropertyDto propertyDto) {
-        ApiResponse<PropertyDto> response = propertyService.addProperty(propertyDto);
+    	Long hostId = securityUtils.getCurrentHostId();
+    	
+        ApiResponse<PropertyDto> response = propertyService.addProperty(propertyDto, hostId);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    // PROTECTED → TOKEN REQUIRED
+    // PROTECTED → TOKEN REQUIR
     @PutMapping("/{propertyId}")
     @PreAuthorize("hasAnyRole('ADMIN','HOST')")
     public ResponseEntity<ApiResponse<PropertyDto>> updateProperty(
@@ -88,6 +93,19 @@ public class PropertyController {
         ApiResponse<Void> response = propertyService.deleteProperty(propertyId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    
+   
+    @GetMapping("/hostProperties")
+    @PreAuthorize("hasAnyRole('ADMIN','HOST')")
+    public ResponseEntity<ApiResponse<List<PropertyDto>>> getAllPropertiesOfHost() {
+
+        Long hostId = securityUtils.getCurrentHostId(); 
+        ApiResponse<List<PropertyDto>> response =
+                propertyService.getPropertyByHostId(hostId);
+
+        return ResponseEntity.status(response.getStatusCode()).body(response);
+    }
+
 }
 
 

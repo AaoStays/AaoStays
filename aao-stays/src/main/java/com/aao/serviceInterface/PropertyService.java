@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface PropertyService {
-    ApiResponse<PropertyDto> addProperty(PropertyDto propertyDto);
+    ApiResponse<PropertyDto> addProperty(PropertyDto propertyDto, Long hostId);
 
     ApiResponse<List<PropertyDto>> getAllProperties();
 
@@ -21,4 +21,6 @@ public interface PropertyService {
     ApiResponse<List<PropertyDto>>serachProperty(String  city,String state, String categoryType,String propertyType,BigDecimal minPrice,BigDecimal maxPrice);
     
      ApiResponse<PropertyDto> updatePropertyStaus(Long PropertyId, PropertyStatus newStaus);
+     
+     ApiResponse<List<PropertyDto>> getPropertyByHostId(Long hostId);
 }

@@ -19,7 +19,6 @@ public class PropertyMapper {
         dto.setPropertyId(property.getPropertyId());
 
         /* 🔥 SAFE: uses FK columns, no lazy loading */
-        dto.setHostId(property.getHostId());
         dto.setAdminId(property.getAdminId());
 
         dto.setEmployeeId(property.getEmployeeId());

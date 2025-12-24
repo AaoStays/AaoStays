@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aao.dto.UserResponse;
-import com.aao.entity.User;
 import com.aao.response.ApiResponse;
 import com.aao.serviceInterface.IUserService;
 

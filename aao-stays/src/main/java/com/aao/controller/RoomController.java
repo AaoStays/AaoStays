@@ -95,7 +95,6 @@ public class RoomController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    // ------------------ DELETE ROOM ------------------
     @DeleteMapping("/{roomId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'HOST')")
     public ResponseEntity<ApiResponse<Void>> deleteRoom(@PathVariable Long roomId) {

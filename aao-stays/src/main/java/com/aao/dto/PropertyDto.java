@@ -12,7 +12,6 @@ import java.util.List;
 @Data
 public class PropertyDto {
     private Long propertyId;
-    private Long hostId;
     private Long employeeId;
     private Long adminId;
     private String propertyName;

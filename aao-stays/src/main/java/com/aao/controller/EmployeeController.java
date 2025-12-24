@@ -34,7 +34,7 @@ public class EmployeeController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    // 2. Get Employee by ID - ADMIN or EMPLOYEE can view
+
     @GetMapping("/{employeeId}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EMPLOYEE')")
     public ResponseEntity<ApiResponse<EmployeeDto>> getEmployeeById(@PathVariable Long employeeId) {
@@ -42,7 +42,6 @@ public class EmployeeController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
 
-    // 3. List All Employees with Filters - ADMIN ONLY
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<EmployeeDto>>> getAllEmployees(
