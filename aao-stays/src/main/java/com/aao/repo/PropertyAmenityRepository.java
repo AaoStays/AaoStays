@@ -1,15 +1,13 @@
-package com.aao.repo;
+public interface PropertyAmenityRepository
+        extends JpaRepository<PropertyAmenity, Long> {
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import com.aao.entity.PropertyAmenity;
+    boolean existsByProperty_PropertyIdAndAmenity_AmenityId(
+            Long propertyId, Long amenityId);
 
-import java.util.List;
+    List<PropertyAmenity> findByProperty_PropertyId(Long propertyId);
 
-public interface PropertyAmenityRepository extends JpaRepository<PropertyAmenity, Long> {
+    List<PropertyAmenity> findByAmenity_AmenityId(Long amenityId);
 
-    boolean existsByPropertyIdAndAmenityId(Long propertyId, Long amenityId);
-
-    List<PropertyAmenity> findByPropertyId(Long propertyId);
-
-    List<PropertyAmenity> findByAmenityId(Long amenityId);
+    void deleteByProperty_PropertyIdAndAmenity_AmenityId(
+            Long propertyId, Long amenityId);
 }
