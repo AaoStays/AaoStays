@@ -1,0 +1,561 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap'); 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+
+* {
+   box-sizing: border-box; 
+  } 
+  
+  body{
+  margin:0;
+  font-family: 'Poppins', sans-serif;
+}
+  
+  #root { 
+    width: 100%; 
+    overflow-x: hidden; 
+  } 
+  
+  .navbar{ 
+    display:flex; 
+    justify-content:space-between; 
+    padding:15px 40px; 
+    position:sticky; 
+    top:0; 
+    background:white; 
+  } 
+
+  /* ===== FIGMA NAVBAR ===== */
+
+.nav-logo span {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: #1F2933;
+}
+
+/* Menu links */
+.nav-links a {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  color: #1F2933;
+  text-decoration: none;
+  margin: 0 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  color: #2ebfa5;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;   /* makes text vertical */
+  line-height: 1.1;
+}
+
+.logo-main {
+  font-size: 20px;
+  font-weight: 600;
+  color: #1F2933;
+}
+
+.logo-sub {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: #6b7280;
+}
+
+/* Signup button */
+.signup {
+  border: 1.5px solid #1F2933;
+  border-radius: 22px;
+  padding: 7px 18px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: #1F2933;
+}
+  
+  .nav-logo { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+  }
+  
+  .nav-logo img {
+     height: 42px; 
+    } 
+    
+  .signup { 
+    padding: 8px 16px; 
+    border-radius: 20px; 
+    color: #000; 
+  } 
+
+  
+  /* Navbar main text */ 
+  .nav-links a { 
+    color: #1F2933; 
+    text-decoration: none; 
+    font-family: 'Poppins', sans-serif; 
+    font-weight: 500; 
+    
+  /* Medium */ 
+  font-size: 15px; 
+} 
+
+/* Signup button text */ 
+.signup {
+   color: #1F2933; 
+   font-family: 'Poppins', sans-serif; 
+   font-weight: 500; 
+  } 
+
+  /* Logo Aaostays text */ 
+  .nav-logo span, 
+  .nav-logo h3, 
+  .nav-logo p { 
+    color: #1F2933; 
+    font-family: 'Poppins', sans-serif; 
+    font-weight: 600; 
+  
+   /* SemiBold */ 
+   font-size: 18px; 
+  } 
+
+  body, html, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}  
+
+.search-box select,
+.search-box input {
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.search-box button {
+  background: #2ebfa5;
+  color: white;
+  border: none;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+  
+.hero {
+  width: 100%;
+  height: 85vh;                /* more breathing space */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 80px;        /* space for dots */
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+}
+
+.hero-dots, 
+.hero-text {
+  position: relative;
+  z-index: 3;
+}
+
+
+.hero-text {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  max-width: 900px;
+}
+
+/* A CHAIN OF HOMESTAYS */
+.hero-text p {
+  font-size: 18px;
+  letter-spacing: 3px;
+  margin-bottom: 26px;
+  opacity: 0.95;
+  font-weight: 600;
+}
+
+/* Welcome to AaoStays */
+.hero-text h1 {
+  font-size: 64px;
+  font-weight: 600;
+  margin-bottom: 22px;
+  line-height: 1.2;
+}
+
+/* Your Comfort, Our Priority */
+.hero-text h3 {
+  font-size: 18px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.hero {
+  padding-bottom: 90px;
+}
+
+.hero-dots {
+  position: absolute;
+  bottom: 35px;               /* 👈 keeps dots over image */
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 5;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+  transition: 0.3s ease;
+}
+
+.dot.active {
+  background: #2ebfa5;
+  width: 12px;
+  height: 12px;
+}
+
+
+.features { 
+    background: #F9FBFF;   
+    padding: 50px 6% 30px;  /* top | sides | bottom */
+  } 
+
+.icon-box {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 18px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+}
+
+/* Colors */
+.icon-box.blue { background: #eef2ff; color: #4f46e5; }
+.icon-box.purple { background: #f5f3ff; color: #7c3aed; }
+.icon-box.green { background: #ecfdf5; color: #059669; }
+.icon-box.gold { background: #fffbeb; color: #fbbf24; }
+
+/* Star row */
+.icon-box.stars {
+  gap: 4px;
+  font-size: 22px;
+}
+  
+.feature-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); 
+    gap: 35px; 
+  } 
+.feature-card { 
+    background: linear-gradient(145deg,#ffffff,#f1f6ff); 
+    border-radius: 30px; 
+    padding: 35px 30px; 
+    text-align: center; 
+    box-shadow: 0 25px 45px rgba(0,0,0,0.10); 
+    transition: 0.4s ease; 
+  } 
+  
+.feature-card:hover { 
+    transform: translateY(-12px); 
+    box-shadow: 0 35px 65px rgba(0,0,0,0.15); 
+  } 
+  .feature-icon { 
+    font-size: 56px; 
+    color: #4f46e5; 
+    margin-bottom: 12px; 
+  } 
+  .stars { 
+    display:flex; 
+    justify-content:center; 
+    gap:8px; 
+    font-size:36px; 
+    color:#fbbf24; 
+    margin-bottom:12px; 
+  } 
+  .feature-card h3 { 
+    font-size: 22px; 
+    font-weight: 600; 
+    margin-bottom: 8px; 
+    color:#0f172a; 
+  } 
+  .feature-card p { 
+    font-size: 16px; 
+    color:#475569; 
+  } 
+  
+  /* STAYS SECTION (FIGMA MATCHED) */
+
+.stays {
+  background: #eefaf7;
+  padding: 50px 5%;
+}
+
+.stays h2 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #0f172a;
+}
+
+.stays h3 {
+  font-size: 16px;
+  font-weight: 400;
+  color: #475569;
+  margin-bottom: 35px;
+}
+
+/* GRID */
+.stay-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;                     /* 👈 reduced gap */
+}
+
+/* CARD */
+.stay-card {
+  background: #ffffff;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* IMAGE */
+.stay-card img {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+}
+
+/* CONTENT */
+.stay-card h4 {
+  font-size: 17px;
+  font-weight: 600;
+  padding: 14px 18px 4px;
+  margin: 0;
+}
+
+.price {
+  color: #16a34a;
+  font-weight: 600;
+  padding: 0 18px 6px;
+  margin: 0;
+}
+
+.stay-card h5 {
+  font-size: 14px;
+  font-weight: 400;
+  color: #64748b;
+  padding: 0 18px 12px;
+  margin: 0;
+}
+
+/* BUTTON */
+.book-btn {
+  margin: 10px 18px 18px;
+  padding: 10px 0;
+  border-radius: 999px;
+  background: #2ebfa5;
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.book-btn:hover {
+  background: #1da28a;
+}
+.price{ 
+    color:green; 
+  } 
+.faq{ 
+    text-align:center; 
+    padding:60px; 
+  } 
+.faq-box{ 
+    background:white; 
+    border-radius:20px; 
+    padding:40px; 
+    margin:20px auto; 
+    max-width:800px; 
+  } 
+.faq-item { 
+    background: white; 
+    border-radius: 18px; 
+    padding: 20px; 
+    margin: 15px auto; 
+    max-width: 800px; 
+    cursor: pointer; 
+    overflow: hidden; 
+  } 
+.faq-item p { 
+    max-height: 0; 
+    opacity: 0; 
+    transition: all 0.4s ease; 
+  } 
+.faq-item.open p { 
+    max-height: 200px; 
+    opacity: 1; 
+    margin-top: 10px; 
+  } 
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 6%;
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* LEFT SIDE */
+.footer-left {
+  display: flex;
+  gap: 28px;
+}
+
+.footer-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #1f2933;
+  cursor: pointer;
+}
+
+.footer-item svg {
+  font-size: 16px;
+  color: #2ebfa5;
+}
+
+/* RIGHT SIDE */
+.footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.footer-right h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.footer-socials {
+  display: flex;
+  gap: 18px;
+}
+
+.footer-socials a {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  text-decoration: none;
+  color: #1f2933;
+  transition: 0.3s;
+}
+
+.footer-socials a:hover {
+  color: #2ebfa5;
+}
+
+.footer-socials svg {
+  font-size: 15px;
+}
+
+
+  /* ===== INSTAGRAM EXPLORE SLIDER ===== */
+
+.insta-explore {
+  background: #E8F7F5;
+  padding: 70px 6% 90px;
+  text-align: center;
+}
+
+.insta-explore h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.insta-explore p {
+  font-size: 15px;
+  color: #64748b;
+  margin-bottom: 40px;
+}
+
+/* Slider */
+.insta-track {
+  overflow: hidden;
+}
+
+.insta-row {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  animation: instaScroll 40s linear infinite;
+}
+
+.insta-card {
+  width: 240px;
+  height: 260px;
+  border-radius: 24px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+}
+
+.insta-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.5s;
+}
+
+.insta-card:hover img {
+  transform: scale(1.08);
+}
+
+@keyframes instaScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.search-section {
+  background: #ffffff;
+  padding: 0 0 40px;
+  margin-top: -30px;
+}
