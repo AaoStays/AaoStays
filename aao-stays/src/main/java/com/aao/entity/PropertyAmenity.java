@@ -1,20 +1,11 @@
-package com.aao.entity;
-
-import jakarta.persistence.*;
-import lombok.*;
-import java.time.LocalDateTime;
-import java.util.Collection;
-
-import com.aao.dto.PropertyAmenityDTO;
-
 @Entity
-@Table(
-        name = "property_amenity",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"property_id", "amenity_id"})
-)
+@Table(name = "property_amenity",
+       uniqueConstraints = {
+           @UniqueConstraint(columnNames = {"property_id", "amenity_id"})
+       })
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class PropertyAmenity {
 
@@ -22,47 +13,20 @@ public class PropertyAmenity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long propertyAmenityId;
 
-    @Column(nullable = false)
-    private Long propertyId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "property_id", nullable = false)
+    private Property property;
 
-    @Column(nullable = false)
-    private Long amenityId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "amenity_id", nullable = false)
+    private Amenity amenity;
 
-    @Column(nullable = false)
-    private Boolean isAvailable = true;
+    private Boolean isAvailable;
 
-    private String notes;
+    private LocalDateTime assignedAt;
 
-    @Column(updatable = false)
-    private LocalDateTime assignedAt = LocalDateTime.now();
-
-	public Collection<PropertyAmenityDTO> findByPropertyId1(Long propertyId2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public boolean existsByPropertyIdAndAmenityId(Long propertyId2, Long amenityId2) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public PropertyAmenity save(PropertyAmenity entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public Object findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void deleteById(Long id) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public Collection<PropertyAmenityDTO> findByPropertyId(Long propertyId2) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @PrePersist
+    void onCreate() {
+        this.assignedAt = LocalDateTime.now();
+    }
 }
