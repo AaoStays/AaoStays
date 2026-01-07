@@ -1,43 +1,43 @@
-package com.aao.controller;
-
-import com.aao.dto.BookingGuestDto;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/v1/bookings")
+@RequestMapping("/api/v1/property-amenities")
 @RequiredArgsConstructor
-public class BookingGuestController {
+public class PropertyAmenityController {
 
-    private final com.aao.serviceInterface.BookingGuestService bookingGuestService;
+    private final IPropertyAmenityService service;
 
-    @PostMapping("/{bookingId}/guests")
-    public ResponseEntity<BookingGuestDto> addGuest(
-            @PathVariable Long bookingId,
-            @RequestBody BookingGuestDto dto) {
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(bookingGuestService.addGuestToBooking(bookingId, dto));
+    @PostMapping
+    public ResponseEntity<PropertyAmenityResponseDto> assignAmenity(
+            @RequestBody PropertyAmenityRequestDto dto) {
+        return ResponseEntity.ok(service.assignAmenity(dto));
     }
 
-    @GetMapping("/{bookingId}/guests")
-    public ResponseEntity<List<BookingGuestDto>> getGuests(
-            @PathVariable Long bookingId) {
-
+    @PutMapping("/{id}/availability")
+    public ResponseEntity<PropertyAmenityResponseDto> updateAvailability(
+            @PathVariable Long id,
+            @RequestParam Boolean isAvailable) {
         return ResponseEntity.ok(
-                bookingGuestService.getGuestsByBooking(bookingId)
-        );
+                service.updateAvailability(id, isAvailable));
     }
 
-    @DeleteMapping("/guests/{guestId}")
-    public ResponseEntity<Void> deleteGuest(@PathVariable Long guestId) {
+    @GetMapping("/property/{propertyId}")
+    public ResponseEntity<List<PropertyAmenityResponseDto>> getByProperty(
+            @PathVariable Long propertyId) {
+        return ResponseEntity.ok(
+                service.getAmenitiesByProperty(propertyId));
+    }
 
-        bookingGuestService.deleteGuest(guestId);
+    @GetMapping("/amenity/{amenityId}")
+    public ResponseEntity<List<PropertyAmenityResponseDto>> getByAmenity(
+            @PathVariable Long amenityId) {
+        return ResponseEntity.ok(
+                service.getPropertiesByAmenity(amenityId));
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> removeAmenity(
+            @RequestParam Long propertyId,
+            @RequestParam Long amenityId) {
+        service.removeAmenity(propertyId, amenityId);
         return ResponseEntity.noContent().build();
     }
 }
