@@ -1,121 +1,86 @@
-package com.aao.serviceImpl;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
-import com.aao.dto.PropertyAmenityDTO;
-import com.aao.entity.PropertyAmenity;
-import com.aao.repo.PropertyAmenityRepository;
-import com.aao.response.ApiResponse;
-import com.aao.serviceInterface.IPropertyAmenityService;
-
-import lombok.RequiredArgsConstructor;
-
 @Service
 @RequiredArgsConstructor
-public class PropertyAmenityServiceImpl implements IPropertyAmenityService {
+@Transactional
+public class PropertyAmenityServiceImpl
+        implements IPropertyAmenityService {
 
-    private final PropertyAmenityRepository propertyAmenityRepository;
+    private final PropertyRepository propertyRepository;
+    private final AmenityRepository amenityRepository;
+    private final PropertyAmenityRepository repository;
 
-    // =========================
-    // ADD PROPERTY AMENITY
-    // =========================
     @Override
-    public PropertyAmenityDTO addAmenityToProperty(PropertyAmenityDTO dto) {
+    public PropertyAmenityResponseDto assignAmenity(
+            PropertyAmenityRequestDto dto) {
 
-        boolean exists = propertyAmenityRepository
-                .existsByPropertyIdAndAmenityId(dto.getPropertyId(), dto.getAmenityId());
-
-        if (exists) {
-            throw new RuntimeException("Amenity already assigned to this property");
+        if (repository.existsByProperty_PropertyIdAndAmenity_AmenityId(
+                dto.getPropertyId(), dto.getAmenityId())) {
+            throw new RuntimeException("Amenity already assigned to property");
         }
 
-        PropertyAmenity entity = new PropertyAmenity();
-        entity.setPropertyId(dto.getPropertyId());
-        entity.setAmenityId(dto.getAmenityId());
-        entity.setIsAvailable(
-                dto.getIsAvailable() != null ? dto.getIsAvailable() : true
-        );
-        entity.setNotes(dto.getNotes());
+        Property property = propertyRepository.findById(dto.getPropertyId())
+                .orElseThrow(() -> new RuntimeException("Property not found"));
 
-        PropertyAmenity savedEntity = propertyAmenityRepository.save(entity);
+        Amenity amenity = amenityRepository.findById(dto.getAmenityId())
+                .orElseThrow(() -> new RuntimeException("Amenity not found"));
 
-        return mapToDTO(savedEntity);
+        PropertyAmenity pa = PropertyAmenity.builder()
+                .property(property)
+                .amenity(amenity)
+                .isAvailable(
+                        dto.getIsAvailable() != null
+                                ? dto.getIsAvailable()
+                                : true)
+                .build();
+
+        return mapToDto(repository.save(pa));
     }
 
-    // =========================
-    // UPDATE AVAILABILITY
-    // =========================
     @Override
-    public PropertyAmenityDTO updateAmenityStatus(Long id, Boolean isAvailable) {
+    public PropertyAmenityResponseDto updateAvailability(
+            Long id, Boolean isAvailable) {
 
-        PropertyAmenity entity = propertyAmenityRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Property Amenity not found with id: " + id));
+        PropertyAmenity pa = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Mapping not found"));
 
-        entity.setIsAvailable(isAvailable);
-
-        PropertyAmenity updated = propertyAmenityRepository.save(entity);
-        return mapToDTO(updated);
+        pa.setIsAvailable(isAvailable);
+        return mapToDto(repository.save(pa));
     }
 
-    // =========================
-    // DELETE
-    // =========================
     @Override
-    public void deletePropertyAmenity(Long id) {
+    public List<PropertyAmenityResponseDto> getAmenitiesByProperty(
+            Long propertyId) {
 
-        if (!propertyAmenityRepository.existsById(id)) {
-            throw new RuntimeException("Property Amenity not found with id: " + id);
-        }
-
-        propertyAmenityRepository.deleteById(id);
-    }
-
-    // =========================
-    // GET BY PROPERTY ID
-    // =========================
-    @Override
-    public List<PropertyAmenityDTO> getAmenitiesByProperty(Long propertyId) {
-
-        return propertyAmenityRepository.findByPropertyId(propertyId)
+        return repository.findByProperty_PropertyId(propertyId)
                 .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+                .map(this::mapToDto)
+                .toList();
     }
 
-    // =========================
-    // GET BY ID
-    // =========================
     @Override
-    public PropertyAmenityDTO getById(Long id) {
+    public List<PropertyAmenityResponseDto> getPropertiesByAmenity(
+            Long amenityId) {
 
-        PropertyAmenity entity = propertyAmenityRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Property Amenity not found with id: " + id));
-
-        return mapToDTO(entity);
+        return repository.findByAmenity_AmenityId(amenityId)
+                .stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
-    // =========================
-    // ENTITY → DTO MAPPER
-    // =========================
-    private PropertyAmenityDTO mapToDTO(PropertyAmenity entity) {
-
-        PropertyAmenityDTO dto = new PropertyAmenityDTO();
-        dto.setPropertyAmenityId(entity.getPropertyAmenityId());
-        dto.setPropertyId(entity.getPropertyId());
-        dto.setAmenityId(entity.getAmenityId());
-        dto.setIsAvailable(entity.getIsAvailable());
-        dto.setNotes(entity.getNotes());
-
-        return dto;
+    @Override
+    public void removeAmenity(Long propertyId, Long amenityId) {
+        repository.deleteByProperty_PropertyIdAndAmenity_AmenityId(
+                propertyId, amenityId);
     }
 
-    public ApiResponse<PropertyAmenityDTO> addAmenityToProperty(PropertyAmenity amenity) {
-        return null;
+    private PropertyAmenityResponseDto mapToDto(PropertyAmenity pa) {
+        return PropertyAmenityResponseDto.builder()
+                .id(pa.getPropertyAmenityId())
+                .propertyId(pa.getProperty().getPropertyId())
+                .propertyName(pa.getProperty().getPropertyName())
+                .amenityId(pa.getAmenity().getAmenityId())
+                .amenityName(pa.getAmenity().getAmenityName())
+                .isAvailable(pa.getIsAvailable())
+                .assignedAt(pa.getAssignedAt())
+                .build();
     }
-
 }
