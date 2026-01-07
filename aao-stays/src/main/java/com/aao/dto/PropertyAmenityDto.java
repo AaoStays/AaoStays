@@ -1,16 +1,17 @@
 package com.aao.dto;
 
 import lombok.*;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class PropertyAmenityDTO {
-
-    private Long propertyAmenityId;
+public class PropertyAmenityRequestDto {
     private Long propertyId;
     private Long amenityId;
     private Boolean isAvailable;
-    private String notes;
+}
+public class PropertyAmenityResponseDto {
+    private Long id;
+    private Long propertyId;
+private String propertyName;
+    private Long amenityId;
+    private String amenityName;
+    private Boolean isAvailable;
+   private LocalDateTime assignedAt;
 }
