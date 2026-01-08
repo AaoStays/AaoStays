@@ -1,11 +1,12 @@
 import { 
   FiHome, FiCalendar, FiMessageSquare, 
-  FiPlusCircle, FiLayers, FiDollarSign, 
+  FiPlusCircle, FiLayers,FiClipboard,
   FiBell, FiUser 
 } from "react-icons/fi";
 import "../App.css";
 import { useNavigate } from "react-router-dom";
-
+import "../css/HostDashboard.css";
+ 
 const HostDashboard = () => {
 
   const navigate = useNavigate();
@@ -32,16 +33,12 @@ const HostDashboard = () => {
             <FiPlusCircle /> Add New Property
           </li>
 
-          <li onClick={() => navigate("/host/calendar")}>
-            <FiCalendar /> Calendar View
-          </li>
+         
 
-          <li onClick={() => navigate("/host/messages")}>
-            <FiMessageSquare /> Messages
-          </li>
+          
 
-          <li onClick={() => navigate("/host/revenue")}>
-            <FiDollarSign /> Revenue Reports
+          <li onClick={() => navigate("/hostBookings")}>
+          <FiClipboard/>   My Bookings
           </li>
         </ul>
       </div>
@@ -95,22 +92,13 @@ const HostDashboard = () => {
           <div className="module-card" onClick={() => navigate("/addproperty")}>
             Add New Property
           </div>
+          <div className="module-card" onClick={()=> navigate("/hostProperties")}>My Properties</div>
 
           <div className="module-card">
             Booking Requests
           </div>
 
-          <div className="module-card" onClick={() => navigate("/host/calendar")}>
-            Calendar View
-          </div>
-
-          <div className="module-card" onClick={() => navigate("/host/messages")}>
-            Customer Messages
-          </div>
-
-          <div className="module-card" onClick={() => navigate("/host/revenue")}>
-            Revenue Reports
-          </div>
+         
         </div>
 
       </div>

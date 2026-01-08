@@ -30,10 +30,17 @@ const handleLogin = async (e) => {
     
     const auth = response.data;
 
+
+
     console.log("EXTRACTED AUTH:", auth);
 
-    localStorage.setItem("token", auth.accessToken);
-    localStorage.setItem("role", auth.role);
+       if (auth.accessToken) {
+      localStorage.setItem("token", auth.accessToken);
+    }
+    if (auth.refreshToken) {
+      localStorage.setItem("refreshToken", auth.refreshToken);
+    }
+  
   
        const role = auth.role?.toUpperCase();
     if (auth.role === "HOST") {

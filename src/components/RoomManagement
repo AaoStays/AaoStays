@@ -1,0 +1,165 @@
+import React, { useEffect, useState } from "react";
+import ApiService from "../../services/ApiService";
+
+const RoomManagement = ({ propertyId }) => {
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const [newRoom, setNewRoom] = useState({
+    roomType: "",
+    pricePerNight: "",
+    maxGuests: "",
+    description: "",
+  });
+
+
+  const fetchRooms = async () => {
+    try {
+      setLoading(true);
+      const res = await ApiService.getRoomsByProperty(propertyId);
+      setRooms(res.data.data || []);
+    } catch (err) {
+      console.error("Failed to fetch rooms", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (propertyId) fetchRooms();
+  }, [propertyId]);
+
+  // ------------------ ADD ROOM ------------------
+  const handleAddRoom = async () => {
+    try {
+      await ApiService.addRoom(propertyId, newRoom);
+      setNewRoom({
+        roomType: "",
+        pricePerNight: "",
+        maxGuests: "",
+        description: "",
+      });
+      fetchRooms();
+    } catch (err) {
+      console.error("Add room failed", err);
+    }
+  };
+
+  // ------------------ UPDATE STATUS ------------------
+  const handleStatusChange = async (roomId, status) => {
+    try {
+      await ApiService.updateRoomStatus(roomId, status);
+      fetchRooms();
+    } catch (err) {
+      console.error("Status update failed", err);
+    }
+  };
+
+  // ------------------ DELETE ROOM ------------------
+  const handleDelete = async (roomId) => {
+    if (!window.confirm("Delete this room?")) return;
+    try {
+      await ApiService.deleteRoom(roomId);
+      fetchRooms();
+    } catch (err) {
+      console.error("Delete failed", err);
+    }
+  };
+
+  return (
+    <div className="room-management">
+      <h2>Room Management</h2>
+
+      {/* ADD ROOM */}
+      <div className="add-room-card">
+        <h3>Add Room</h3>
+        <input
+          placeholder="Room Type"
+          value={newRoom.roomType}
+          onChange={(e) =>
+            setNewRoom({ ...newRoom, roomType: e.target.value })
+          }
+        />
+        <input
+          placeholder="Price Per Night"
+          type="number"
+          value={newRoom.pricePerNight}
+          onChange={(e) =>
+            setNewRoom({ ...newRoom, pricePerNight: e.target.value })
+          }
+        />
+        <input
+          placeholder="Max Guests"
+          type="number"
+          value={newRoom.maxGuests}
+          onChange={(e) =>
+            setNewRoom({ ...newRoom, maxGuests: e.target.value })
+          }
+        />
+        <textarea
+          placeholder="Description"
+          value={newRoom.description}
+          onChange={(e) =>
+            setNewRoom({ ...newRoom, description: e.target.value })
+          }
+        />
+        <button onClick={handleAddRoom}>Add Room</button>
+      </div>
+
+      {/* ROOMS LIST */}
+      {loading ? (
+        <p>Loading rooms...</p>
+      ) : (
+        <table className="room-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th>Price</th>
+              <th>Guests</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rooms.map((room) => (
+              <tr key={room.roomId}>
+                <td>{room.roomId}</td>
+                <td>{room.roomType}</td>
+                <td>₹{room.pricePerNight}</td>
+                <td>{room.maxGuests}</td>
+                <td>
+                  <select
+                    value={room.roomStatus}
+                    onChange={(e) =>
+                      handleStatusChange(room.roomId, e.target.value)
+                    }
+                  >
+                    <option value="AVAILABLE">AVAILABLE</option>
+                    <option value="OCCUPIED">OCCUPIED</option>
+                    <option value="MAINTENANCE">MAINTENANCE</option>
+                  </select>
+                </td>
+                <td>
+                  <button
+                    className="danger"
+                    onClick={() => handleDelete(room.roomId)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {rooms.length === 0 && (
+              <tr>
+                <td colSpan="6">No rooms found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      )}
+    </div>
+  );
+};
+
+export default RoomManagement;

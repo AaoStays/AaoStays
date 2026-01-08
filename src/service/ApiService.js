@@ -4,15 +4,21 @@ export default class ApiService{
    
 static Base_URL = "http://localhost:8081";
 
+  static getHeader() {
+  const token = localStorage.getItem("token");
 
-   static getHeader(){
-    const token=localStorage.getItem("token")
-    return {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        };
+  const headers = {
+    "Content-Type": "application/json",
+  };
 
-   }
+  
+  if (token && token !== "null") {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
 
   
 
@@ -22,10 +28,16 @@ static Base_URL = "http://localhost:8081";
    }
 
 
-   //login  
+  
    static async loginUser(login){
     const resonse = await axios.post(`${this.Base_URL}/api/auth/login`,login)
     return resonse.data
+   }
+
+
+   static logout(){
+    localStorage.removeItem("token");
+    window.location.href="/login";
    }
     
    static async getAllUsers() {
@@ -58,7 +70,7 @@ static Base_URL = "http://localhost:8081";
 static async addProperty(propertyData) {
   try {
     const response = await axios.post(
-      `${this.Base_URL}/api/v1/properties`,
+      `${this.Base_URL}/api/v1/properties/addProperty`,
       propertyData,
       {
         headers: this.getHeader(),
@@ -70,13 +82,21 @@ static async addProperty(propertyData) {
     throw error;
   }
 }
-static async uploadImage(propertyId, imageFile) {
+
+static async uploadImages(propertyId, imageFiles) {
   try {
     const formData = new FormData();
-    formData.append("images", imageFile); // backend expects "images"
+    
+    
+    imageFiles.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    console.log("Uploading to property ID:", propertyId);
+    console.log("Number of images:", imageFiles.length);
 
     const response = await axios.post(
-      `${this.Base_URL}/api/properties/${propertyId}/images/upload`,
+      `${this.Base_URL}/api/v1/properties/images/upload/${propertyId}`,  // 👈 Added slash
       formData,
       {
         headers: {
@@ -89,11 +109,11 @@ static async uploadImage(propertyId, imageFile) {
     return response.data;
 
   } catch (error) {
-    console.error("Error uploading image:", error);
+    console.error("Error uploading images:", error);
+    console.error("Error details:", error.response?.data);
     throw error;
   }
 }
-
 
  
   static async getAllProperties() {
@@ -150,7 +170,7 @@ static async uploadImage(propertyId, imageFile) {
   static async addProperty(propertyData) {
     try {
       const response = await axios.post(
-        `${this.Base_URL}/api/v1/properties`,
+        `${this.Base_URL}/api/v1/properties/addProperty`,
         propertyData,
         { headers: this.getHeader() }
       );
@@ -191,7 +211,7 @@ static async uploadImage(propertyId, imageFile) {
 static async getAllHosts() {
   try {
     const response = await axios.get(
-      `${this.Base_URL}/api/v1/hosts`,
+      `${this.Base_URL}/api/v1/hosts/getAll`,
       { headers: this.getHeader() }
     );
     return response.data;
@@ -201,7 +221,6 @@ static async getAllHosts() {
   }
 }
 
-// ⭐ Get host by ID
 static async getHostById(hostId) {
   try {
     const response = await axios.get(
@@ -215,7 +234,7 @@ static async getHostById(hostId) {
   }
 }
 
-// ⭐ Create Host (optional use)
+
 static async createHost(hostDto) {
   try {
     const response = await axios.post(
@@ -230,7 +249,7 @@ static async createHost(hostDto) {
   }
 }
 
-// ⭐ Update Host
+
 static async updateHost(hostId, hostDto) {
   try {
     const response = await axios.put(
@@ -245,7 +264,6 @@ static async updateHost(hostId, hostDto) {
   }
 }
 
-// ⭐ Delete Host
 static async deleteHost(hostId) {
   try {
     const response = await axios.delete(
@@ -259,7 +277,7 @@ static async deleteHost(hostId) {
   }
 }
 
-// ⭐ Verify Identity
+
 static async verifyIdentity(hostId) {
   try {
     const response = await axios.post(
@@ -274,11 +292,11 @@ static async verifyIdentity(hostId) {
   }
 }
 
-// ⭐ Activate Host
+
 static async activateHost(hostId) {
   try {
     const response = await axios.patch(
-      `${this.Base_URL}/api/v1/hosts/${hostId}/activate`,
+      `${this.Base_URL}/api/v1/hosts/activate/${hostId}`,
       {},
       { headers: this.getHeader() }
     );
@@ -289,7 +307,7 @@ static async activateHost(hostId) {
   }
 }
 
-// ⭐ Deactivate Host
+
 static async deactivateHost(hostId) {
   try {
     const response = await axios.patch(
@@ -304,7 +322,6 @@ static async deactivateHost(hostId) {
   }
 }
 
-// ⭐ Complete Host Profile
 static async completeHostProfile(hostDto) {
   try {
     const response = await axios.post(
@@ -318,6 +335,48 @@ static async completeHostProfile(hostDto) {
     throw error;
   }
 }
+
+static async getMyProperties() {
+  try {
+    const response = await axios.get(
+      `${this.Base_URL}/api/v1/properties/hostProperties`,
+      { headers: this.getHeader() }
+    );
+    return response.data; // ApiResponse
+  } catch (error) {
+    console.error("Error in fetching properties", error);
+    throw error;
+  }
+}
+static async getHostBookings() {
+  try {
+    const response = await axios.get(
+      `${this.Base_URL}/api/v1/bookings/gethostBookings`,
+      { headers: this.getHeader() }
+    );
+    return response.data; 
+  } catch (error) {
+    console.error("Error in fetching properties", error);
+    throw error;
+  }
+}
+
+
+static async addRoom(propertyId, roomData) {
+  try {
+    const response = await axios.post(
+      `${this.Base_URL}/api/v1/rooms/${propertyId}`,
+      roomData, 
+      { headers: this.getHeader() }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error in adding room", error);
+    throw error;
+  }
+}
+
 
 
 
