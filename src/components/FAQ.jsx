@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "../home/Home.css";
 
 const data = [
@@ -10,20 +10,43 @@ const data = [
 
 export default function FAQ() {
   const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timerRef = useRef(null);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setIndex((prev) => (prev + 1) % data.length);
+    if (!paused){
+      timerRef.current = setInterval(() => {
+      setIndex(prev => (prev + 1) % data.length);
     }, 6000);
+    }
 
-    return () => clearInterval(timer);
-  }, []);
+    return () => clearInterval(timerRef.current);
+  }, [paused]);
 
+  const next = () => setIndex((index + 1) % data.length);
+  const prev = () => setIndex((index -1 + data.length) % data.length);
+  
   return (
     <section className="faq">
       <h2>Frequently Asked Questions</h2>
 
+      <div
+        className="faq-wrapper"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+      />
+
+      <div className="faq-card-wrapper"> 
       <div className="faq-slider">
+       <div className="faq-arrows">
+  <button className="faq-arrow up" onClick={prev}>
+    <span className="arrow-circle">↑</span>
+  </button>
+  <button className="faq-arrow down" onClick={next}>
+    <span className="arrow-circle">↓</span>
+  </button>
+</div>
+
         <div
           className="faq-track"
           style={{ transform: `translateY(-${index * 140}px)` }}
@@ -31,7 +54,7 @@ export default function FAQ() {
           {data.map((item, i) => (
             <div className="faq-slide" key={i}>
               <h4 className="faq-question">{item.q}</h4>
-
+            
               {/* key forces re-animation on every slide */}
               <p className="faq-answer" key={index}>
                 {item.a}
@@ -40,6 +63,9 @@ export default function FAQ() {
           ))}
         </div>
       </div>
-    </section>
+
+       
+    </div>
+  </section>
   );
 }

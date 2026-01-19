@@ -5,7 +5,7 @@ export default function Navbar() {
         <img src="/logo.png" alt="Aaostays Logo" />
          <div className="logo-text">
     <span className="logo-main">AaoStays</span>
-    <span className="logo-sub">আহাে থাকো</span>
+    <span className="logo-sub">আমাৰ অতিথি</span>
   </div>
       </div>
 

@@ -24,14 +24,34 @@
     top:0; 
     background:white; 
   } 
+  body{
+  padding-top: 82px;   /* exact navbar height */
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 
   /* ===== FIGMA NAVBAR ===== */
+  .logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
 
-.nav-logo span {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: 20px;
+.logo-main {
+  font-size: 22px;
+  font-weight: 700;
   color: #1F2933;
+}
+
+.logo-sub {
+  font-size: 14px;          /* 👈 Assamese size */
+  letter-spacing: 1px;
+  color: #6b7280;
+  font-weight: 700;
+  margin-top: 2px;
 }
 
 /* Menu links */
@@ -50,23 +70,6 @@
   color: #2ebfa5;
 }
 
-.logo-text {
-  display: flex;
-  flex-direction: column;   /* makes text vertical */
-  line-height: 1.1;
-}
-
-.logo-main {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1F2933;
-}
-
-.logo-sub {
-  font-size: 12px;
-  letter-spacing: 2px;
-  color: #6b7280;
-}
 
 /* Signup button */
 .signup {
@@ -93,7 +96,10 @@
     border-radius: 20px; 
     color: #000; 
   } 
-
+  
+  .navbar{
+  z-index: 9999;
+}
   
   /* Navbar main text */ 
   .nav-links a { 
@@ -113,17 +119,12 @@
    font-weight: 500; 
   } 
 
-  /* Logo Aaostays text */ 
-  .nav-logo span, 
-  .nav-logo h3, 
-  .nav-logo p { 
-    color: #1F2933; 
-    font-family: 'Poppins', sans-serif; 
-    font-weight: 600; 
-  
-   /* SemiBold */ 
-   font-size: 18px; 
-  } 
+  /* Main Logo text */ 
+ 
+ /*Assamese Text Only*/
+
+
+/*Logo icon or span*/
 
   body, html, #root {
   margin: 0;
@@ -131,28 +132,10 @@
   width: 100%;
   height: 100%;
 }  
-
-.search-box select,
-.search-box input {
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  font-size: 14px;
-}
-
-.search-box button {
-  background: #2ebfa5;
-  color: white;
-  border: none;
-  border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-}
   
 .hero {
   width: 100%;
-  height: 85vh;                /* more breathing space */
+  min-height: calc(100vh - 82px);               /* more breathing space */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -554,8 +537,95 @@
   to   { transform: translateX(-50%); }
 }
 
-.search-section {
-  background: #ffffff;
-  padding: 0 0 40px;
-  margin-top: -30px;
+.search-section{
+  margin-top: 0;
+  padding-top: 30px;
+}
+
+.navbar{
+  z-index: 9999;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+/* Section separation lines */
+.features,
+.stays,
+.insta-explore,
+.faq {
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ===============================
+   MOBILE RESPONSIVE FIXES
+================================*/
+@media (max-width: 768px) {
+
+  /* Navbar */
+  .navbar{
+    padding: 12px 18px;
+  }
+
+  .nav-links{
+    display: none;   /* (we will later add hamburger menu) */
+  }
+
+  /* Hero */
+  .hero-text h1{
+    font-size: 36px;
+  }
+
+  .hero-text p{
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  .hero-text h3{
+    font-size: 14px;
+  }
+
+  .hero-btn{
+    padding: 12px 28px;
+    font-size: 14px;
+  }
+
+  /* Features */
+  .feature-grid{
+    grid-template-columns: 1fr;
+  }
+
+  /* Stays */
+  .stay-grid{
+    grid-template-columns: 1fr;
+  }
+
+  .stay-card img{
+    height: 190px;
+  }
+
+  /* Instagram */
+  .insta-row{
+    gap: 12px;
+  }
+
+  .insta-card{
+    width: 190px;
+    height: 210px;
+  }
+
+  /* FAQ */
+  .faq{
+    padding: 40px 18px;
+  }
+
+  /* Footer */
+  .footer{
+    flex-direction: column;
+    gap: 18px;
+    text-align: center;
+  }
+
+  .footer-left{
+    flex-direction: column;
+    gap: 12px;
+  }
 }
