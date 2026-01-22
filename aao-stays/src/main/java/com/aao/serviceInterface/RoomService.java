@@ -1,6 +1,7 @@
 package com.aao.serviceInterface;
 
 import com.aao.dto.PriceRangeDto;
+import com.aao.dto.RoomBookingRequestDto;
 import com.aao.dto.RoomRequestDto;
 import com.aao.dto.RoomResponseDto;
 import com.aao.dto.RoomStatusUpdateDto;
@@ -33,4 +34,7 @@ public interface RoomService {
     ApiResponse<Void> deleteRoom(Long roomId);
 
     ApiResponse<PriceRangeDto> getPropertyRoomPriceRange(Long propertyId);
+
+    ApiResponse<RoomResponseDto> bookRoom(Long roomId, RoomBookingRequestDto dto);
+
 }

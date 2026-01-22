@@ -32,45 +32,54 @@ public class SecurityConfigure {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> {})
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> {
+                })
 
-            .authorizeHttpRequests(auth -> auth
+                .authorizeHttpRequests(auth -> auth
 
-                // PUBLIC ROUTES
-                .requestMatchers("/api/auth/**").permitAll()
+                        // PUBLIC ROUTES
+                        .requestMatchers("/api/bookings/guest").permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
 
-               
-                .requestMatchers(
-                    "/api/v1/properties/getAll",
-                    "/api/v1/properties/search",
-                    "/api/v1/properties/*/images",
-                    "/api/v1/properties/*"  
-                ).permitAll()
+                        // .requestMatchers("/api/v1/rooms/property/**").permitAll()
+                        .requestMatchers(
+                                "/api/v1/properties/getAll",
+                                "/api/v1/properties/search",
+                                "/api/v1/properties/*/images",
+                                "/api/v1/properties/*",
+                                "/api/properties/*/images",
+                                "/api/v1/rooms/property/**",
+                                "/api/v1/rooms/*/book",
+                                "/api/v1/bookings/calculate-price",
+                                "/api/v1/bookings/properties/*/availability")
+                        .permitAll()
+                        
+                        .requestMatchers("/api/v1/properties").hasAnyRole("ADMIN", "HOST")
+                        .requestMatchers("/api/v1/properties/*").hasAnyRole("ADMIN", "HOST")
 
-                
-                .requestMatchers("/api/v1/properties").hasAnyRole("ADMIN", "HOST")      
-                .requestMatchers("/api/v1/properties/*").hasAnyRole("ADMIN", "HOST")    
 
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/admins/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/upload/image").hasAnyRole("ADMIN", "HOST")
+                    // .requestMatchers("/api/v1/bookings/**").hasAnyAuthority("USER", "GUEST", "ADMIN", "HOST")
 
-              
-                .anyRequest().authenticated()
-            )
+                        
+                    // .requestMatchers("/api/v1/booking-guests/**").hasAnyAuthority("USER", "GUEST", "ADMIN", "HOST")
 
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/admins/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/upload/image").hasAnyRole("ADMIN", "HOST")
+                        .requestMatchers("/api/v1/properties").hasAnyRole("ADMIN", "HOST")
+                        .anyRequest().authenticated())
+
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(customUserDetailsService);
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(customUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }

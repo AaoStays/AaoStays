@@ -1,6 +1,7 @@
 package com.aao.serviceImpl;
 
 import com.aao.dto.PriceRangeDto;
+import com.aao.dto.RoomBookingRequestDto;
 import com.aao.dto.RoomRequestDto;
 import com.aao.dto.RoomResponseDto;
 import com.aao.dto.RoomStatusUpdateDto;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+// import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +33,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public ApiResponse<RoomResponseDto> addRoom(Long propertyId, RoomRequestDto roomRequestDto) {
+        if (propertyId == null) {
+            throw new IllegalArgumentException("Property ID is required");
+        }
         // Validate property exists
         Property property = propertyRepository.findById(propertyId)
                 .orElseThrow(() -> new IllegalArgumentException("Property not found with ID: " + propertyId));
@@ -54,9 +59,36 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @SuppressWarnings("null")
+    @Transactional
+    public ApiResponse<RoomResponseDto> bookRoom(Long roomId, RoomBookingRequestDto dto) {
+
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found"));
+
+        if (room.getRoomStatus() != RoomStatus.AVAILABLE) {
+            throw new IllegalStateException("Room is not available");
+        }
+
+        if (dto.getGuests() > room.getMaxGuests()) {
+            throw new IllegalArgumentException("Guest limit exceeded");
+        }
+
+        // 🔴 Later: date overlap logic (optional for now)
+
+        room.setRoomStatus(RoomStatus.OCCUPIED);
+        Room savedRoom = roomRepository.save(room);
+
+        return new ApiResponse<>(200, "Room booked successfully", roomMapper.toDto(savedRoom));
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public ApiResponse<List<RoomResponseDto>> getAllRoomsByPropertyId(Long propertyId) {
         // Validate property exists
+        if (propertyId == null) {
+            throw new IllegalArgumentException("Property ID is required");
+        }
         if (!propertyRepository.existsById(propertyId)) {
             throw new IllegalArgumentException("Property not found with ID: " + propertyId);
         }
@@ -77,6 +109,9 @@ public class RoomServiceImpl implements RoomService {
     @Transactional(readOnly = true)
     public ApiResponse<List<RoomResponseDto>> getAvailableRoomsByPropertyId(Long propertyId) {
         // Validate property exists
+        if (propertyId == null) {
+            throw new IllegalArgumentException("Property ID is required");
+        }
         if (!propertyRepository.existsById(propertyId)) {
             throw new IllegalArgumentException("Property not found with ID: " + propertyId);
         }
@@ -120,6 +155,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional(readOnly = true)
     public ApiResponse<RoomResponseDto> getRoomById(Long roomId) {
+        if (roomId == null) {
+            throw new IllegalArgumentException("Room ID is required");
+        }
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + roomId));
 
@@ -129,6 +167,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public ApiResponse<RoomResponseDto> updateRoom(Long roomId, RoomRequestDto roomRequestDto) {
+        if (roomId == null) {
+            throw new IllegalArgumentException("Room ID is required");
+        }
         Room existingRoom = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + roomId));
 
@@ -164,6 +205,7 @@ public class RoomServiceImpl implements RoomService {
         if (roomRequestDto.getFloorNumber() != null)
             existingRoom.setFloorNumber(roomRequestDto.getFloorNumber());
 
+        @SuppressWarnings("null")
         Room updatedRoom = roomRepository.save(existingRoom);
         return new ApiResponse<>(200, "Room updated successfully", roomMapper.toDto(updatedRoom));
     }
@@ -171,6 +213,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public ApiResponse<RoomResponseDto> updateRoomStatus(Long roomId, RoomStatusUpdateDto statusUpdateDto) {
+        if (roomId == null) {
+            throw new IllegalArgumentException("Room ID is required");
+        }
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found with ID: " + roomId));
 
@@ -187,6 +232,9 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public ApiResponse<Void> deleteRoom(Long roomId) {
+        if (roomId == null) {
+            throw new IllegalArgumentException("Room ID is required");
+        }
         if (!roomRepository.existsById(roomId)) {
             throw new IllegalArgumentException("Room not found with ID: " + roomId);
         }
@@ -199,6 +247,9 @@ public class RoomServiceImpl implements RoomService {
     @Transactional(readOnly = true)
     public ApiResponse<PriceRangeDto> getPropertyRoomPriceRange(Long propertyId) {
         // Validate property exists
+        if (propertyId == null) {
+            throw new IllegalArgumentException("Property ID is required");
+        }
         if (!propertyRepository.existsById(propertyId)) {
             throw new IllegalArgumentException("Property not found with ID: " + propertyId);
         }
