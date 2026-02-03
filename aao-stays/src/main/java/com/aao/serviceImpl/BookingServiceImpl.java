@@ -8,6 +8,7 @@ import com.aao.repo.PropertyRepository;
 import com.aao.repo.RoomRepository;
 import com.aao.repo.UserRepo;
 import com.aao.response.ApiResponse;
+import com.aao.security.SecurityUtils;
 import com.aao.service.EmailService;
 import com.aao.serviceInterface.BookingService;
 import com.aao.utils.BookingMapper;
@@ -38,7 +39,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingMapper bookingMapper;
     private final BookingReferenceGenerator bookingReferenceGenerator;
     private final HostRepo hostRepo;
-    
+    private final SecurityUtils  securityUtils;
     private final EmailService emailService;
 
     private static final BigDecimal TAX_RATE = new BigDecimal("0.12"); // 12% tax
@@ -509,4 +510,25 @@ public class BookingServiceImpl implements BookingService {
         Booking savedBooking = bookingRepository.save(booking);
         return new ApiResponse<>(200, "Refund processed successfully", bookingMapper.toDto(savedBooking));
     }
+
+
+	@Override
+	public ApiResponse<List<BookingDto>> getBookingsOfHost() {
+		 Long hostId= securityUtils.getCurrentHostId();
+		 
+		 List<Booking> bookings= bookingRepository.findByProperty_Host_HostId(hostId);
+		 if (bookings.isEmpty()) {
+		        throw new IllegalArgumentException(
+		            "No bookings found for your properties"
+		        );
+		    }
+		   
+		 List<BookingDto> bookingDtos=bookings.stream()
+		            .map(bookingMapper::toDto)
+		            .toList();
+		
+		return new ApiResponse<List<BookingDto>>(200, "bookings of host fetched successfully", bookingDtos);
+	}
+
+
 }

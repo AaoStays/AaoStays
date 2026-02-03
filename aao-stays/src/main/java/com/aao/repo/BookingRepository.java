@@ -72,4 +72,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Long countByBookingStatus(BookingStatus bookingStatus);
 
     Long countByProperty_PropertyIdAndBookingStatus(Long propertyId, BookingStatus bookingStatus);
+    
+    List<Booking> findByProperty_Host_HostId(Long hostId);
 }

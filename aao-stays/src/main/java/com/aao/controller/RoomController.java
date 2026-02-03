@@ -103,7 +103,7 @@ public class RoomController {
         return ResponseEntity.status(response.getStatusCode()).body(response);
     }
 
-    // ------------------ GET PRICE RANGE ------------------
+    
     @GetMapping("/property/{propertyId}/price-range")
     public ResponseEntity<ApiResponse<PriceRangeDto>> getPropertyRoomPriceRange(
             @PathVariable Long propertyId) {

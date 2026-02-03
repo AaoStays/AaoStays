@@ -129,4 +129,16 @@ public class BookingController {
         ApiResponse<BookingDto> response = bookingService.processRefund(bookingId, refundRequest);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getStatusCode()));
     }
+    
+    
+    @GetMapping("/gethostBookings")
+    @PreAuthorize("hasRole('HOST')")
+    public ResponseEntity<ApiResponse<List<BookingDto>>> getHostbookings(){
+    	
+    	ApiResponse<List<BookingDto>> response  = bookingService.getBookingsOfHost();
+    	
+    	return ResponseEntity.status(response.getStatusCode()).body(response);
+    	
+    
+    }
 }

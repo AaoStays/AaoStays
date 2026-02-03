@@ -46,4 +46,6 @@ public class Admin {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    
 }

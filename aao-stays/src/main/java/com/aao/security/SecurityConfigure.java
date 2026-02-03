@@ -25,80 +25,80 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 public class SecurityConfigure {
 
-    private final JwtAuthFilter jwtAuthFilter;
-    private final CustomUserDetailsService customUserDetailsService;
+	private final JwtAuthFilter jwtAuthFilter;
+	private final CustomUserDetailsService customUserDetailsService;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-            .csrf(csrf -> csrf.disable())
-            .cors(cors -> {})
+		http.csrf(csrf -> csrf.disable()).cors(cors -> {
+		})
 
-            .authorizeHttpRequests(auth -> auth
+				.authorizeHttpRequests(auth -> auth
 
-               
-                .requestMatchers("/api/auth/**").permitAll()
+						.requestMatchers("/api/auth/**").permitAll()
 
-               
-                .requestMatchers(
-                    "/api/v1/properties/getAll",
-                    "/api/v1/properties/search",
-                    "/api/v1/properties/*/images",
-                    "/api/v1/properties/*" , 
-                    "/api/v1/bookings/book",
-                    "/api/v1/bookings/properties/availability/**"
-                ).permitAll()
+						.requestMatchers("/api/v1/properties/getAll", "/api/v1/properties/search",
+								"/api/v1/properties/*/images", "/api/v1/properties/*", "/api/v1/bookings/book",
+								"/api/v1/bookings/properties/availability/**")
+						.permitAll()
 
-                
-                .requestMatchers("/api/v1/properties").hasAnyRole("ADMIN", "HOST")      
-                .requestMatchers("/api/v1/properties/*").hasAnyRole("ADMIN", "HOST")    
-                .requestMatchers("/api/v1/properties/images/upload/**").hasAnyRole("ADMIN", "HOST")    
-                .requestMatchers("/api/v1/properties/images/primary/**").hasAnyRole("ADMIN", "HOST")    
-                .requestMatchers("/api/v1/properties/images/**").hasAnyRole("ADMIN", "HOST")    
-                .requestMatchers("/api/v1/properties/addProperty").hasAnyRole("ADMIN", "HOST")   
-                .requestMatchers("/api/v1/properties/hostProperties").hasAnyRole("ADMIN", "HOST")               
+						.requestMatchers("/api/v1/properties").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/properties/*").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/properties/images/upload/**").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/properties/images/primary/**").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/properties/images/**").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/properties/addProperty").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/properties/hostProperties").hasAnyRole("ADMIN", "HOST")
 
-                
-                .requestMatchers("/api/v1/admins/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/upload/image").hasAnyRole("ADMIN", "HOST")
-                .requestMatchers("/api/v1/bookings/getBooking/**").hasAnyRole("ADMIN","HOST")
-                .requestMatchers("/api/v1/bookings/reference/**").authenticated()
-                .requestMatchers("/api/v1/bookings/getAllbookingsOfUser").hasAnyRole("ADMIN","HOST")
-                .requestMatchers("/api/v1/bookings/cancel/**") .authenticated()
+						.requestMatchers("/api/v1/admins/**").hasRole("ADMIN").requestMatchers("/api/v1/upload/image")
+						.hasAnyRole("ADMIN", "HOST").requestMatchers("/api/v1/bookings/getBooking/**")
+						.hasAnyRole("ADMIN", "HOST").requestMatchers("/api/v1/bookings/gethostBookings").hasRole("HOST")
+						.requestMatchers("/api/v1/bookings/reference/**").authenticated()
+						.requestMatchers("/api/v1/bookings/getAllbookingsOfUser").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/bookings/cancel/**").authenticated()
 //                .requestMatchers("/api/v1/hosts/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/hosts/getAll").hasRole("ADMIN")
-                .requestMatchers("/api/v1/hosts/delete/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/hosts/activate/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/hosts/deactivate/**").hasRole("ADMIN")
-                .requestMatchers("/api/v1/hosts/completeProfile").hasRole("HOST")
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                
-                .anyRequest().authenticated()
-            )
+						.requestMatchers("/api/v1/hosts/getAll").hasRole("ADMIN")
+						.requestMatchers("/api/v1/hosts/delete/**").hasRole("ADMIN")
+						.requestMatchers("/api/v1/hosts/activate/**").hasRole("ADMIN")
+						.requestMatchers("/api/v1/hosts/deactivate/**").hasRole("ADMIN")
+						.requestMatchers("/api/v1/hosts/completeProfile").hasRole("HOST")
+						.requestMatchers("/api/admin/**").hasRole("ADMIN")
+						.requestMatchers("/api/v1/rooms/{propertyId}").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/rooms/property/{propertyId}").permitAll()						
+						.requestMatchers("/api/v1/rooms/property/{propertyId}/available").permitAll()
+						.requestMatchers("/api/v1/rooms/search").permitAll()
+						.requestMatchers("/api/v1/rooms/{roomId}").permitAll()
+						.requestMatchers("/api/v1/rooms/{roomId}").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/rooms/{roomId}/status").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/rooms/{roomId}").hasAnyRole("ADMIN", "HOST")
+						.requestMatchers("/api/v1/contactDetails/addContact").hasAnyRole("ADMIN","HOST")
+						.requestMatchers("/api/v1/rooms/property/{propertyId}/price-range").permitAll()
 
-            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+						.anyRequest().authenticated())
 
-        return http.build();
-    }
+				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authenticationProvider(authenticationProvider())
+				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(customUserDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
-        return provider;
-    }
+		return http.build();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public AuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setUserDetailsService(customUserDetailsService);
+		provider.setPasswordEncoder(passwordEncoder());
+		return provider;
+	}
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
 }

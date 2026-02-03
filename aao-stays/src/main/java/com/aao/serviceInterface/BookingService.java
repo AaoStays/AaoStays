@@ -44,4 +44,7 @@ public interface BookingService {
     ApiResponse<List<BookingDto>> getUserBookings(Long userId);
 
     ApiResponse<BookingDto> processRefund(Long bookingId, RefundRequestDto refundRequest);
+    
+    ApiResponse<List<BookingDto>> getBookingsOfHost();
+    
 }

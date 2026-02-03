@@ -86,7 +86,7 @@ public class PropertyController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    // PROTECTED → TOKEN REQUIRED
+   
     @DeleteMapping("/{propertyId}")
     @PreAuthorize("hasAnyRole('ADMIN','HOST')")
     public ResponseEntity<ApiResponse<Void>> deleteProperty(@PathVariable Long propertyId) {

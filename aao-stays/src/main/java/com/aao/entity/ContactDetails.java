@@ -20,7 +20,7 @@ public class ContactDetails {
     @Column(name = "contact_id")
     private Long contactId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "property_id", nullable = false, unique = true)
     @ToString.Exclude
     private Property property;
@@ -35,7 +35,7 @@ public class ContactDetails {
     private String primaryMobile;
 
     @Column(name = "alternate_mobile", length = 20)
-    private String alternateMobile;
+    private String alternateMobile;	
 
     @Column(name = "preferred_contact_method", length = 50)
     private String preferredContactMethod = "PHONE";

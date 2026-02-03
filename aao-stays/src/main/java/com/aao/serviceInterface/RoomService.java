@@ -17,7 +17,9 @@ public interface RoomService {
     ApiResponse<List<RoomResponseDto>> getAllRoomsByPropertyId(Long propertyId);
 
     ApiResponse<List<RoomResponseDto>> getAvailableRoomsByPropertyId(Long propertyId);
-
+    
+    ApiResponse<List<RoomResponseDto>> getRoomsByPropertyId(Long propertyId);
+    
     ApiResponse<List<RoomResponseDto>> searchRooms(
             String roomType,
             BigDecimal minPrice,

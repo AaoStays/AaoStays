@@ -49,7 +49,7 @@ public class PropertyServiceImpl implements PropertyService {
 	    }
 
 	    Property savedProperty = propertyRepository.save(property);
-
+        
 	    host.setTotalProperties(host.getTotalProperties() + 1);
 	    hostRepo.save(host);
 

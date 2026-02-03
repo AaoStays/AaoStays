@@ -222,4 +222,23 @@ public class RoomServiceImpl implements RoomService {
         PriceRangeDto priceRangeDto = new PriceRangeDto(minPrice, maxPrice);
         return new ApiResponse<>(200, "Price range retrieved successfully", priceRangeDto);
     }
+
+	@Override
+	public ApiResponse<List<RoomResponseDto>> getRoomsByPropertyId(Long propertyId) {
+		 
+		if(!propertyRepository.existsById(propertyId)) {
+			throw new IllegalArgumentException("Property ID not found "+ propertyId);
+			
+		}
+		  List<Room> rooms = roomRepository.findByProperty_PropertyId(propertyId);
+		  
+		  List<RoomResponseDto> roomDtos = rooms.stream()
+            .map(roomMapper::toDto)
+            .collect(Collectors.toList());
+				
+
+		
+	        return new ApiResponse<>(200, "Rooms retrieved successfully", roomDtos);
+
+	}
 }
