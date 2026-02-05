@@ -11,7 +11,6 @@ import com.aao.serviceInterface.RoomAmenityService;
 import com.aao.utils.RoomAmenityMapper;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,50 +20,58 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoomAmenityServiceImpl implements RoomAmenityService {
 
-private final RoomAmenityRepository repository;
-private final RoomRepository roomRepository;
-private final RoomAmenityMapper amenityMapper;
-@Override
-public ApiResponse <RoomAmenityRequest>addAmenity(RoomAmenityRequest request) {
+    private final RoomAmenityRepository repository;
+    private final RoomRepository roomRepository;
 
-Room room = roomRepository.findById(request.getRoomId())
-.orElseThrow(() -> new RuntimeException("Room not found"));
+    @Override
+    public ApiResponse<RoomAmenityResponse> addAmenity(RoomAmenityRequest request) {
 
-RoomAmenity amenity = RoomAmenityMapper.toEntity(request);
+        Room room = roomRepository.findById(request.getRoomId())
+                .orElseThrow(() -> new RuntimeException("Room not found"));
 
-RoomAmenity saved = repository.save(amenity);
+        RoomAmenity amenity = RoomAmenityMapper.toEntity(request);
 
-return new ApiResponse<RoomAmenityRequest>(201, "amenity added successfully", amenityMapper.toResponse(amenity));
-}
+        
+        amenity.setRoom(room);
 
-@Override
-public ApiResponse<List<RoomAmenityResponse>> getAmenitiesByRoom(Long roomId) {
+        RoomAmenity saved = repository.save(amenity);
 
-List<RoomAmenityResponse> list = repository.findByRoomId(roomId)
-.stream()
-.map(RoomAmenityMapper::toResponse)
-.collect(Collectors.toList());
+        return new ApiResponse<RoomAmenityResponse>(201,"Amenity added successfully",RoomAmenityMapper.toResponse(saved));
+    }
 
-return new ApiResponse<>(true, "Amenities fetched successfully", list);
-}
+    @Override
+    public ApiResponse<List<RoomAmenityResponse>> getAmenitiesByRoom(Long roomId) {
 
-@Override
-public ApiResponse<RoomAmenityResponse> updateAmenity(Long id, RoomAmenityRequest request) {
+        List<RoomAmenityResponse> list =
+                repository.findByRoom_RoomId(roomId)
+                        .stream()
+                        .map(RoomAmenityMapper::toResponse)
+                        .collect(Collectors.toList());
 
-RoomAmenity amenity = repository.findById(id)
-.orElseThrow(() -> new RuntimeException("Amenity not found"));
+        return new ApiResponse<>(200,"Amenities fetched successfully",list);
+    }
 
-amenity.setAmenityName(request.getAmenityName());
-amenity.setAmenityIcon(request.getAmenityIcon());
-amenity.setIsAvailable(request.getIsAvailable());
-amenity.setNotes(request.getNotes());
+    @Override
+    public ApiResponse<RoomAmenityResponse> updateAmenity(Long id, RoomAmenityRequest request) {
 
-return new ApiResponse<>(true, "Amenity updated successfully",RoomAmenityMapper.toResponse(repository.save(amenity)));
-}
+        RoomAmenity amenity = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Amenity not found"));
 
-@Override
-public ApiResponse<String> deleteAmenity(Long id) {
-repository.deleteById(id);
-return new ApiResponse<>(true, "Amenity deleted successfully", "Deleted");
-}
+        amenity.setAmenityName(request.getAmenityName());
+        amenity.setAmenityIcon(request.getAmenityIcon());
+        amenity.setIsAvailable(request.getIsAvailable());
+        amenity.setNotes(request.getNotes());
+
+        RoomAmenity updated = repository.save(amenity);
+
+        return new ApiResponse<>(200,"Amenity updated successfully",RoomAmenityMapper.toResponse(updated));
+    }
+
+    @Override
+    public ApiResponse<String> deleteAmenity(Long id) {
+
+        repository.deleteById(id);
+
+        return new ApiResponse<>(200,"Amenity deleted successfully","Deleted");
+    }
 }

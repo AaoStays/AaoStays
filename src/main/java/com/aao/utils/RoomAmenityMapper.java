@@ -15,7 +15,7 @@ public class RoomAmenityMapper {
         return amenity;
     }
 
-public RoomAmenityRequest toResponse(RoomAmenity a) 
+public static RoomAmenityResponse toResponse(RoomAmenity a) 
 {
 RoomAmenityResponse res = new RoomAmenityResponse();
     	    res.setRoomAmenityId(a.getRoomAmenityId());

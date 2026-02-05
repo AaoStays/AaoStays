@@ -116,7 +116,7 @@ public class UserServiceImpl implements IUserService {
 
         User saved = userRepo.save(user);
         String token = verificationTokenService.generateEmailVerificationToken(saved.getEmail());
-        String link = "http://localhost:8080/api/auth/verify-email?token=" + token;
+        String link = "http://localhost:8081/api/auth/verify-email?token=" + token;
 
         emailService.sendEmailVerificationLink(saved.getEmail(), link);
 

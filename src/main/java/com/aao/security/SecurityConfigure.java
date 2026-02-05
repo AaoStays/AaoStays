@@ -1,4 +1,5 @@
 package com.aao.security;
+import org.springframework.http.HttpMethod;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,13 +62,20 @@ public class SecurityConfigure {
                 .requestMatchers("/api/v1/bookings/reference/**").authenticated()
                 .requestMatchers("/api/v1/bookings/getAllbookingsOfUser").hasAnyRole("ADMIN","HOST")
                 .requestMatchers("/api/v1/bookings/cancel/**") .authenticated()
-//                .requestMatchers("/api/v1/hosts/**").hasRole("ADMIN")
+                	//.requestMatchers("/api/v1/hosts/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/hosts/getAll").hasRole("ADMIN")
                 .requestMatchers("/api/v1/hosts/delete/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/hosts/activate/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/hosts/deactivate/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/hosts/completeProfile").hasRole("HOST")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                
+                //Room Amenity
+                .requestMatchers("/api/room-amenities/room/**").permitAll()
+                
+                .requestMatchers(HttpMethod.POST,   "/api/room-amenities").permitAll()
+                .requestMatchers(HttpMethod.PUT,    "/api/room-amenities/**").hasAnyRole("ADMIN","HOST")
+                .requestMatchers(HttpMethod.DELETE, "/api/room-amenities/**").hasAnyRole("ADMIN","HOST")
                 
                 .anyRequest().authenticated()
             )
