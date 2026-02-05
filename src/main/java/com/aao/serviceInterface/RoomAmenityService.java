@@ -9,8 +9,8 @@ import com.aao.response.ApiResponse;
 public interface RoomAmenityService {
 
 /*{take API response for all methods}*/
-ApiResponse<RoomAmenityRequest> addAmenity(RoomAmenityRequest request);
+ApiResponse<RoomAmenityResponse> addAmenity(RoomAmenityRequest request);
 ApiResponse<List<RoomAmenityResponse>> getAmenitiesByRoom(Long roomId);
-ApiResponse<RoomAmenityResponse> updateAmenity(Long roomId, RoomAmenityRequest request);
+ApiResponse<RoomAmenityResponse> updateAmenity(Long Id, RoomAmenityRequest request);
 ApiResponse<String> deleteAmenity(Long id);
 }

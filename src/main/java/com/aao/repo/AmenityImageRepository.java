@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface AmenityImageRepository extends JpaRepository<AmenityImage, Long> {
 
-    List<AmenityImage> findByPropertyId(Long propertyId);
+	List<AmenityImage> findByProperty_PropertyId(Long propertyId);
 
-    List<AmenityImage> findByPropertyIdAndRelatedType(Long propertyId, RelatedType relatedType);
+    List<AmenityImage> findByProperty_PropertyIdAndRelatedType(Long propertyId, RelatedType relatedType);
 }

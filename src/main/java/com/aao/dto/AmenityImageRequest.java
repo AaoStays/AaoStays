@@ -1,6 +1,10 @@
 package com.aao.dto;
 import com.aao.enums.RelatedType;
 
+import lombok.Data;
+
+@Data
+
 public class AmenityImageRequest {
 
 		private Long PropertyId;

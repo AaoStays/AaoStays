@@ -31,7 +31,7 @@ public class AmenityImageServiceImpl implements AmenityImageService {
 
     @Override
     public List<AmenityImageResponse> getByPropertyId(Long propertyId) {
-        return repository.findByPropertyId(propertyId)
+        return repository.findByProperty_PropertyId(propertyId)
                 .stream()
                 .map(AmenityImageMapper::toDTO)
                 .collect(Collectors.toList());
@@ -39,7 +39,7 @@ public class AmenityImageServiceImpl implements AmenityImageService {
 
     @Override
     public List<AmenityImageResponse> getByPropertyAndType(Long propertyId, RelatedType relatedType) {
-        return repository.findByPropertyIdAndRelatedType(propertyId, relatedType)
+        return repository.findByProperty_PropertyIdAndRelatedType(propertyId, relatedType)
                 .stream()
                 .map(AmenityImageMapper::toDTO)
                 .collect(Collectors.toList());

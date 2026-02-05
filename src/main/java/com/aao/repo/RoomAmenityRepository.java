@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface RoomAmenityRepository extends JpaRepository<RoomAmenity, Long> 
 {
-	List<RoomAmenity> findByRoomId(Long roomId);
+	List<RoomAmenity> findByRoom_RoomId(Long roomId);
 
 }
