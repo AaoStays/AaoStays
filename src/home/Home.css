@@ -1,0 +1,410 @@
+
+/* ================================
+   HOME BASE
+================================ */
+.home {
+  background: #eefaf7;
+  padding: 60px 8%;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.section-sub {
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 35px;
+  color: #555;
+}
+
+.search-box {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.2fr 140px;
+  gap: 12px;
+  background: white;
+  padding: 22px;
+  border-radius: 30px;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.18);
+  margin: 70px auto 80px;
+  width: 85%;
+}
+
+.search-box input,
+.guest-input {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+}
+
+.guest-input {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.search-box button {
+  background: #2ebfa5;
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.search-box button:hover {
+  background: #1da28a;
+}
+
+.guest-popup {
+  position: absolute;
+  top: 110%;
+  right: 160px;
+  background: white;
+  padding: 18px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  width: 230px;
+  z-index: 999;
+}
+
+.guest-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.guest-row button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #2ebfa5;
+  color: white;
+  cursor: pointer;
+}
+
+
+/* ================================
+   STAYS GRID
+================================ */
+.stay-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.stay-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: 0.3s;
+}
+
+.stay-card:hover {
+  transform: translateY(-10px);
+  transition:0.4s;
+}
+
+.stay-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.stay-body {
+  padding: 15px;
+}
+
+.stay-body h3 {
+  margin: 0;
+}
+
+.price {
+  color: green;
+  font-weight: bold;
+}
+
+/* ================================
+   FAQ PREMIUM SLIDER
+================================ */
+.faq {
+  background: #eefaf7;
+  padding: 70px 6% 90px;
+  text-align: center;
+}
+
+.faq h2 {
+  font-size: 34px;
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #0f172a;
+}
+
+/* Visible Window */
+.faq-slider {
+  max-width: 900px;
+  margin: auto;
+  height: 140px;
+  overflow: hidden;
+}
+
+/* Sliding Track */
+.faq-track {
+  transition: transform 0.9s cubic-bezier(.4,0,.2,1);
+}
+
+/* Each Slide */
+.faq-slide {
+  height: 140px;
+  background: white;
+  border-radius: 22px;
+  padding: 28px 42px;
+  box-shadow: 0 25px 55px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Question */
+.faq-question {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+/* Answer */
+.faq-answer {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* Mobile */
+@media(max-width:768px){
+  .faq-slider { height: 160px; }
+  .faq-slide { height: 160px; padding: 22px; }
+}
+
+/* ================================
+   PREMIUM GUEST POPUP
+================================ */
+
+.guest-popup {
+  padding: 22px;
+  width: 280px;
+  border-radius: 26px;
+  background: #ffffff;
+}
+
+.guest-row {
+  background: #f8fafc;
+  border-radius: 18px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.guest-label {
+  display: flex;
+  flex-direction: column;
+}
+
+.guest-type {
+  font-weight: 600;
+  text-transform: capitalize;
+  font-size: 15px;
+}
+
+.guest-sub {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.guest-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.guest-controls button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: #2ebfa5;
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.2s ease;
+  outline: none;
+}
+
+.guest-controls button:hover {
+  background: #1da28a;
+}
+
+.guest-controls button:active {
+  transform: scale(0.92);
+}
+
+.guest-controls button:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.guest-count {
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* ================================
+   FAQ ARROWS & HOVER PAUSE
+================================ */
+
+.faq-wrapper {
+  position: relative;
+  max-width: 900px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.faq-arrow {
+  position: static;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: white;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  cursor: pointer;
+  font-size: 18px;
+  color: #2ebfa5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+  z-index: 5;
+}
+
+.faq-arrow:hover {
+  background: #2ebfa5;
+  color: white;
+}
+
+.faq-arrow.top {
+  top: -22px;
+}
+
+.faq-arrow.bottom {
+  bottom: -22px;
+}
+
+.faq-card-wrapper {
+  position: relative;
+  width: 70%;
+  margin: auto;
+}
+
+.faq-card {
+  background: #fff;
+  border-radius: 22px;
+  padding: 40px 70px 40px 40px;
+  text-align: center;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.05);
+}
+
+/* Right side arrows */
+.faq-arrows {
+  position: absolute;
+  right: -22px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 27px;
+}
+
+.faq-arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  color: #1dbf9f;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.18);
+  transition: 0.25s;
+}
+
+.faq-arrow:hover {
+  background: #1dbf9f;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* ==============================
+   LOCATION DROPDOWN (PREMIUM)
+================================ */
+
+.location-dropdown{
+  position: relative;
+}
+
+.location-input{
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.location-options{
+  position: absolute;
+  top: 115%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 18px 35px rgba(0,0,0,0.12);
+  overflow: hidden;
+  display: none;
+  z-index: 10;
+}
+
+.location-dropdown:hover .location-options{
+  display: block;
+}
+
+.location-option{
+  padding: 14px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.25s;
+}
+
+.location-option:hover{
+  background: #2ebfa5;
+  color: white;
+}
